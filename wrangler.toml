@@ -1,0 +1,13 @@
+name = "furnish"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".open-next/assets"
+
+# ─── Local Development Bindings ────────────────────────────────
+# Add KV namespaces, R2 buckets, or D1 databases here if needed.
+# For now all data goes through Supabase over HTTPS — no Cloudflare bindings needed.
+
+# ─── Environment Variables ─────────────────────────────────────
+# Non-secret vars can go here under [vars].
+# Secret vars (API keys) must NEVER go here.
+# Add secrets in: Cloudflare Dashboard → Pages → furnish → Settings → Environment Variables

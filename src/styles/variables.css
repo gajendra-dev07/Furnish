@@ -1,0 +1,105 @@
+:root {
+  /* Color Palette - Premium Editorial Luxury Palette */
+  --color-primary-hsl: 0, 0%, 7%;
+  --color-primary: #121212; /* Rich Obsidian Charcoal (Museum contrast) */
+  
+  --color-secondary-hsl: 30, 2%, 25%;
+  --color-secondary: #3D3B38; /* Editorial warm grey (Refined readability) */
+  
+  /* Luxury Accents: Metallic Copper, Walnut Wood, Plaster Stone */
+  --color-accent-hsl: 28, 44%, 35%;
+  --color-accent: #8E5E41; /* Burnished Copper / Travertine Sand Accent */
+  --color-accent-hover: #734A31;
+  --color-accent-light: #F9F6F0; /* Soft warm plaster wash */
+  
+  --color-gold-hsl: 25, 23%, 24%;
+  --color-gold: #4B3C31; /* Deep Walnut / Smoked Oak Wood Accent */
+  --color-gold-hover: #372C24;
+
+  --color-bg-primary-hsl: 33, 22%, 96%;
+  --color-bg-primary: #FAF7F2; /* Pure Warm Ivory Plaster Base */
+  
+  --color-bg-secondary-hsl: 0, 0%, 100%;
+  --color-bg-secondary: #FFFFFF; /* Gallery White */
+
+  --color-stone: #E8E3DA; /* Architectural Stone / Clay Grey */
+  --color-stone-dark: #CFC8BC;
+  
+  --color-border-hsl: 30, 12%, 90%;
+  --color-border: #EAE5DD; /* Delicate Sand border line */
+  --color-border-hover: #8E5E41; /* Copper highlight on hover */
+
+  --color-success: #4E6C50; /* Sage Green success */
+  --color-error: #A04A3C; /* Terracotta Red error */
+
+  /* UI Shadows (Subtle, soft museum elevations) */
+  --shadow-sm: 0 4px 20px rgba(27, 26, 25, 0.02);
+  --shadow-md: 0 12px 36px rgba(27, 26, 25, 0.04);
+  --shadow-lg: 0 24px 64px rgba(27, 26, 25, 0.06);
+  --shadow-glass: 0 8px 32px rgba(27, 26, 25, 0.02);
+
+  /* Spacing Grid (8px standard luxury basis - generous white space) */
+  --space-2xs: 0.25rem;  /* 4px */
+  --space-xs: 0.5rem;    /* 8px */
+  --space-sm: 0.875rem;  /* 14px */
+  --space-md: 1.25rem;   /* 20px */
+  --space-lg: 2rem;      /* 32px */
+  --space-xl: 3rem;      /* 48px */
+  --space-2xl: 4.5rem;   /* 72px */
+  --space-3xl: 6.5rem;   /* 104px */
+  --space-4xl: 9.5rem;   /* 152px */
+
+  /* Border Radii (Ultra-sharp, architectural layout) */
+  --radius-xs: 0px; /* Sharp corners for luxury gallery cards */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  /* Standard Transitions (Slower, elegant easing) */
+  --transition-fast: 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-normal: 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-slow: 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-magnetic: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout Widths */
+  --max-width-site: 1560px;
+  --max-width-content: 1280px;
+}
+
+[data-theme="dark"] {
+  /* Color Palette - Premium Obsidian/Walnut Dark Mode */
+  --color-primary-hsl: 33, 22%, 96%;
+  --color-primary: #FAF7F2; /* Warm Ivory text */
+  
+  --color-secondary-hsl: 30, 8%, 70%;
+  --color-secondary: #B2ABA0; /* Soft Plaster Grey text */
+  
+  /* Accent Colors */
+  --color-accent-hsl: 28, 44%, 45%;
+  --color-accent: #A77456; /* Lighter copper */
+  --color-accent-hover: #C59173;
+  --color-accent-light: #251E1A; /* Dark warm wash */
+  
+  --color-gold-hsl: 30, 15%, 45%;
+  --color-gold: #736253; /* Lightened Walnut */
+  --color-gold-hover: #8C7C6D;
+
+  --color-bg-primary-hsl: 0, 0%, 8%;
+  --color-bg-primary: #121212; /* Museum Obsidian Base */
+  
+  --color-bg-secondary-hsl: 0, 0%, 12%;
+  --color-bg-secondary: #1D1D1D; /* Obsidian Box Accent */
+  
+  --color-stone: #2A2A2A;
+  --color-stone-dark: #3E3E3E;
+
+  --color-border-hsl: 0, 0%, 18%;
+  --color-border: #2B2B2B; /* Subtle dark obsidian lines */
+  --color-border-hover: #A77456;
+
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 12px 36px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.6);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
+}

@@ -1,0 +1,123 @@
+.sliderSection {
+  padding: 80px 0;
+  background-color: var(--color-bg-primary);
+  border-top: 1px solid var(--color-border);
+}
+
+.sliderTitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 2rem;
+  font-weight: 350;
+  color: var(--color-primary);
+  margin-bottom: 32px;
+  letter-spacing: -0.01em;
+}
+
+.sliderWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.scrollContainer {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  padding: 10px 4px 30px 4px;
+  margin-bottom: -10px;
+}
+
+.scrollContainer::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.sliderItem {
+  flex: 0 0 calc(25% - 18px); /* 4 items per page on desktop */
+  min-width: 0;
+  scroll-snap-align: start;
+  transition: transform 0.3s ease;
+}
+
+.scrollContainer::after {
+  content: "";
+  flex: 0 0 24px; /* Ensure spacer at the end respects padding-right */
+  pointer-events: none;
+}
+
+.navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  opacity: 0.8;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+.navButton:hover:not(:disabled) {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.navButton:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.indicator {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--color-secondary);
+  opacity: 0.8;
+  min-width: 48px;
+  text-align: center;
+  user-select: none;
+}
+
+/* Tablet Layout */
+@media (max-width: 1024px) {
+  .sliderItem {
+    flex: 0 0 calc(33.333% - 16px); /* 3 items visible */
+    min-width: 0;
+  }
+  .sliderSection {
+    padding: 60px 0;
+  }
+}
+
+/* Large Mobile Layout */
+@media (max-width: 768px) {
+  .sliderItem {
+    flex: 0 0 calc(50% - 12px); /* 2 items visible */
+    min-width: 0;
+  }
+  .scrollContainer {
+    gap: 16px;
+  }
+}
+
+/* Small Mobile Layout (Peek effect) */
+@media (max-width: 480px) {
+  .sliderItem {
+    flex: 0 0 calc(80% - 12px); /* 1.25 items visible, showing peek of the next card */
+    min-width: 0;
+  }
+  .sliderTitle {
+    font-size: 1.625rem;
+    margin-bottom: 24px;
+  }
+}

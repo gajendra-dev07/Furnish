@@ -1,0 +1,472 @@
+/* ─── Account Shell ───────────────────────────────────────── */
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: #f9f5f0;
+  font-family: "Poppins", sans-serif;
+  padding-top: 80px; /* header height */
+}
+
+/* ─── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #e8ddd2;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 80px;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.sidebarUser {
+  padding: 20px;
+  border-bottom: 1px solid #f0e8df;
+}
+
+.sidebarUserName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #33383b;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarUserEmail {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarNav {
+  flex: 1;
+  padding: 10px 0;
+  list-style: none;
+  margin: 0;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  background: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  width: 100%;
+  text-align: left;
+}
+
+.navItem:hover {
+  background: #fdf8f4;
+  color: #33383b;
+}
+
+.navItemActive {
+  background: #fdf1e6;
+  color: #c07a3e;
+  border-left-color: #e8a675;
+}
+
+.navDivider {
+  height: 1px;
+  background: #f0e8df;
+  margin: 8px 20px;
+}
+
+.signOutBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: #dc2626;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.signOutBtn:hover {
+  background: #fef2f2;
+}
+
+/* ─── Main Content ────────────────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+}
+
+.pageTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2f4a44;
+  margin: 0 0 4px;
+}
+
+.pageSub {
+  font-size: 0.83rem;
+  color: #9ca3af;
+  margin: 0 0 28px;
+}
+
+/* ─── Cards ───────────────────────────────────────────────── */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ede5db;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.cardTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #33383b;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f5ede5;
+}
+
+/* ─── Stats Row ───────────────────────────────────────────── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: #fff;
+  border: 1px solid #ede5db;
+  border-radius: 10px;
+  padding: 18px;
+  text-decoration: none;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin: 0 0 6px;
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2f4a44;
+  margin: 0;
+}
+
+/* ─── Form ────────────────────────────────────────────────── */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.formGroupFull {
+  grid-column: 1 / -1;
+}
+
+.formLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #33383b;
+}
+
+.formInput {
+  padding: 9px 12px;
+  border: 1px solid #d1c4b8;
+  border-radius: 7px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: #33383b;
+  background: #fff;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #2f4a44;
+}
+
+.formInput:disabled {
+  background: #f9f5f0;
+  color: #9ca3af;
+}
+
+.formHint {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.formError {
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  font-size: 0.82rem;
+  color: #dc2626;
+  margin-bottom: 14px;
+}
+
+.formSuccess {
+  padding: 10px 14px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 7px;
+  font-size: 0.82rem;
+  color: #15803d;
+  margin-bottom: 14px;
+}
+
+.formFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 1px solid #f5ede5;
+}
+
+/* ─── Buttons ─────────────────────────────────────────────── */
+.btnPrimary {
+  background: #2f4a44;
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: 7px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s;
+  text-decoration: none;
+}
+
+.btnPrimary:hover {
+  opacity: 0.85;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  background: #f5ede5;
+  color: #33383b;
+  padding: 9px 20px;
+  border-radius: 7px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid #e8ddd2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+
+.btnSecondary:hover {
+  background: #ede5db;
+}
+
+.btnDanger {
+  background: none;
+  color: #dc2626;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid #fecaca;
+  transition: background 0.15s;
+}
+
+.btnDanger:hover {
+  background: #fef2f2;
+}
+
+/* ─── Address Cards ───────────────────────────────────────── */
+.addressGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.addressCard {
+  border: 1px solid #ede5db;
+  border-radius: 9px;
+  padding: 16px;
+  position: relative;
+  background: #fdf8f4;
+}
+
+.addressCardDefault {
+  border-color: #e8a675;
+  background: #fdf8f4;
+}
+
+.addressLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.defaultBadge {
+  background: #e8a675;
+  color: #fff;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.addressText {
+  font-size: 0.83rem;
+  color: #33383b;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.addressActions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ─── Orders Table ────────────────────────────────────────── */
+.ordersTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+}
+
+.ordersTable th {
+  text-align: left;
+  padding: 10px 14px;
+  background: #fdf8f4;
+  color: #9ca3af;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #ede5db;
+}
+
+.ordersTable td {
+  padding: 12px 14px;
+  color: #374151;
+  border-bottom: 1px solid #f5ede5;
+  vertical-align: middle;
+}
+
+.ordersTable tr:last-child td {
+  border-bottom: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.badgeGreen { background: #d1fae5; color: #065f46; }
+.badgeAmber { background: #fef3c7; color: #92400e; }
+.badgeRed   { background: #fee2e2; color: #991b1b; }
+.badgeGrey  { background: #f3f4f6; color: #374151; }
+
+/* ─── Empty State ─────────────────────────────────────────── */
+.emptyState {
+  text-align: center;
+  padding: 48px 20px;
+  color: #9ca3af;
+}
+
+.emptyStateTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 12px 0 6px;
+}
+
+/* ─── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .shell {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid #e8ddd2;
+  }
+  .sidebarNav {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 8px;
+    gap: 4px;
+  }
+  .navItem {
+    border-left: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    width: auto;
+  }
+  .navItemActive {
+    border-left: none;
+    background: #fdf1e6;
+    color: #c07a3e;
+  }
+  .main {
+    padding: 20px 16px;
+  }
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}

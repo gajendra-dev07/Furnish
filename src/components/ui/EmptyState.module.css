@@ -1,0 +1,49 @@
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-4xl) var(--space-xl);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+}
+
+.cartState {
+  margin-top: var(--space-xl);
+}
+
+.cartTitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.75rem;
+  margin-bottom: var(--space-sm);
+  color: var(--color-primary);
+  font-weight: 300;
+}
+
+.cartText {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-secondary);
+  margin-bottom: var(--space-xl);
+  max-width: 450px;
+  line-height: 1.85;
+}
+
+.shopTitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.5rem;
+  margin-bottom: var(--space-xs);
+  color: var(--color-primary);
+  font-weight: 300;
+}
+
+.shopText {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-secondary);
+  margin-bottom: var(--space-lg);
+  max-width: 400px;
+  line-height: 1.85;
+}

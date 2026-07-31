@@ -1,0 +1,30 @@
+{
+  "name": "furnish",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "pages:build": "opennextjs-cloudflare build",
+    "pages:preview": "wrangler pages dev",
+    "pages:deploy": "wrangler pages deploy"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.109.0",
+    "framer-motion": "^12.40.0",
+    "next": "^16.2.12",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "resend": "^6.18.1"
+  },
+  "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.2",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "wrangler": "^4.86.0"
+  }
+}
