@@ -1,6 +1,8 @@
-# Furnish 🪵
+# Furnish
 
-A modern e-commerce web app for handcrafted wooden kitchenware — chopping boards, serving platters, kitchen organizers, and more. Built with a full backend powered by Supabase.
+Handcrafted wooden kitchenware e-commerce store — chopping boards, serving platters, organizers, and more. Frontend is Next.js; backend is Supabase (auth, Postgres, Storage).
+
+**Repo:** [github.com/jagdishnjaggu/Furnish](https://github.com/jagdishnjaggu/Furnish)
 
 ---
 
@@ -9,29 +11,49 @@ A modern e-commerce web app for handcrafted wooden kitchenware — chopping boar
 | Layer | Technology |
 |---|---|
 | Framework | Next.js 16 (App Router, JavaScript) |
-| Database + Auth | Supabase (PostgreSQL + Row Level Security) |
-| Storage | Supabase Storage (product images) |
-| Payments | Razorpay *(integration pending)* |
-| Email | Resend *(integration pending)* |
-| Deployment | Cloudflare Pages (via `@opennextjs/cloudflare`) |
-| Styling | CSS Modules + custom design system |
+| Auth | Supabase Auth (email + password) |
+| Database | Supabase PostgreSQL + RLS |
+| Media | Supabase Storage (`product-images` bucket) |
+| Payments | Razorpay *(pending)* |
+| Email | Resend / custom SMTP *(pending)* |
+| Deploy target | Cloudflare Pages (`@opennextjs/cloudflare`) |
+
+---
+
+## Current Status
+
+| Area | Status |
+|---|---|
+| Product catalog from Supabase | Done |
+| Product + category images in Supabase Storage | Done |
+| Homepage hero / Know Your Grain / logo from Storage | Done |
+| Auth (login / signup) | Done |
+| Admin panel (`/admin`) — product CRUD + image upload | Done |
+| Customer dashboard (`/account`) | Done |
+| Razorpay checkout | Pending |
+| Order emails | Pending |
+| Custom domain (`furnis.in`) | Blocked by GoDaddy Registrar Hold |
 
 ---
 
 ## Features
 
-### Customer-facing
-- Product catalog with live Supabase queries (shop, categories, product detail)
-- Cart and wishlist (localStorage)
-- Email + password authentication (Supabase Auth)
-- Account dashboard — profile, saved addresses, order history
-- Mobile-first responsive design
+### Storefront
+- Live products & categories from Supabase
+- Cart + wishlist (localStorage)
+- Product detail with related products from DB
+- Auth-gated checkout path (payment wiring next)
 
-### Admin Panel (`/admin`)
-- Role-based access (admin role in `profiles` table)
-- Product management — create, edit, delete, image upload to Supabase Storage
-- Customer list
-- Orders list (ready for Razorpay connection)
+### Admin (`/admin`)
+- Admin-only (role check in middleware + layout)
+- Create / edit / delete products
+- Upload images to Supabase Storage
+- Customers list + orders list (orders fill after Razorpay)
+
+### Account (`/account`)
+- Profile edit
+- Saved addresses
+- Order history (empty until payments)
 
 ---
 
@@ -40,43 +62,51 @@ A modern e-commerce web app for handcrafted wooden kitchenware — chopping boar
 ```
 src/
 ├── app/
-│   ├── admin/          # Admin panel pages
-│   ├── account/        # Customer dashboard pages
-│   ├── auth/           # Login, signup, callback
-│   ├── api/admin/      # Admin API routes (product CRUD, image upload)
-│   ├── shop/           # Shop page
-│   ├── products/[id]/  # Product detail page
-│   └── categories/     # Category pages
-├── components/         # Shared UI components
-├── features/           # Feature-specific components (shop, home)
-├── lib/supabase/       # Supabase clients (browser, server, admin, queries)
-├── store/              # React Context (Cart, Auth)
-└── constants/          # Static data (hero images, testimonials, wood data)
+│   ├── admin/           # Admin UI
+│   ├── account/         # Customer dashboard
+│   ├── auth/            # Login, signup, callback
+│   ├── api/admin/       # Product CRUD + upload APIs
+│   ├── shop/            # Catalog
+│   ├── products/[id]/   # Product detail
+│   └── categories/      # Collections
+├── components/          # Shared UI
+├── features/            # Page feature modules
+├── lib/supabase/        # Clients + queries + requireAdmin
+├── store/               # AuthContext, CartContext
+├── constants/           # Hero, wood data, media URLs
+└── proxy.js             # Session + route protection
+
+scripts/
+├── migrate-images-to-supabase.mjs   # Upload product images + rewrite DB URLs
+├── migrate-homepage-assets.mjs      # Upload hero/logo assets
+└── verify-image-urls.mjs            # Confirm DB URLs are HTTPS Storage links
 
 supabase/
-├── schema.sql          # Full DB schema, RLS policies, seed data
-├── make_admin.sql      # Promote a user to admin role
-└── storage_setup.sql   # Create product-images storage bucket
+├── schema.sql           # Tables, RLS, seed products
+├── make_admin.sql       # Promote user → admin
+└── storage_setup.sql    # Ensure public product-images bucket
+
+images/                  # Optional local backup of media (not served by Next.js)
 ```
+
+> **Important:** The live site loads media from Supabase Storage, not from `public/images`.  
+> Local `images/` is only a backup copy.
 
 ---
 
 ## Getting Started
 
-### 1. Install dependencies
+### 1. Install
 ```bash
 npm install
 ```
 
-### 2. Set up environment variables
-
-Copy `.env.local.example` to `.env.local` and fill in your keys:
-
+### 2. Environment
 ```bash
 cp .env.local.example .env.local
 ```
 
-Required variables:
+Fill in:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
@@ -89,62 +119,83 @@ RESEND_FROM_EMAIL=
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-### 3. Set up the database
+Never commit `.env.local`.
 
-Run `supabase/schema.sql` in your **Supabase SQL Editor**. This creates all tables, RLS policies, indexes, and seeds the product catalog.
+### 3. Database
+1. Run `supabase/schema.sql` in Supabase SQL Editor  
+2. Run `supabase/storage_setup.sql` (public `product-images` bucket)
 
-Run `supabase/storage_setup.sql` to create the `product-images` public storage bucket.
+### 4. Admin user
+1. Sign up at `/auth/signup`  
+2. Run `supabase/make_admin.sql` (set your email)  
+3. Sign in → you should land on `/admin`
 
-### 4. Create your admin account
-
-1. Sign up at `/auth/signup`
-2. Run `supabase/make_admin.sql` in Supabase SQL Editor (update the email first)
-
-### 5. Run the development server
-
+### 5. Dev server
 ```bash
 npm run dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## Deployment (Cloudflare Pages)
+## Media / Storage
+
+All product, category, hero, and logo assets are served from:
+
+```
+https://<project>.supabase.co/storage/v1/object/public/product-images/...
+```
+
+Homepage URLs are defined in `src/constants/media.js`.
+
+### Migration scripts (already run on this project)
+```bash
+# Re-upload product/category images and update DB URLs
+npm run migrate:images
+
+# Upload hero + logo assets
+node scripts/migrate-homepage-assets.mjs
+
+# Verify no local /images/... URLs remain in product_images
+node scripts/verify-image-urls.mjs
+```
+
+---
+
+## Cloudflare Pages
 
 ```bash
-# Build for Cloudflare
 npm run pages:build
-
-# Preview locally
 npm run pages:preview
-
-# Deploy
 npm run pages:deploy
 ```
 
-Add all environment variables in **Cloudflare Dashboard → Pages → furnish → Settings → Environment Variables**.
+Add the same env vars in Cloudflare Pages → Settings → Environment Variables.
+
+**Custom domain note:** `furnis.in` is currently on GoDaddy **Registrar Hold**. Nameserver changes are blocked until GoDaddy clears the hold (WHOIS / account verification). You can still deploy to the default `*.pages.dev` URL.
 
 ---
 
-## Database Schema
+## Database Tables
 
 | Table | Purpose |
 |---|---|
-| `profiles` | Extended user data (name, phone, role) |
-| `categories` | Product categories |
-| `products` | Product catalog |
-| `product_images` | Product image URLs (linked to Supabase Storage) |
-| `addresses` | Customer delivery addresses |
-| `orders` | Order records |
-| `order_items` | Line items within each order |
+| `profiles` | User name, phone, role (`customer` / `admin`) |
+| `categories` | Collections |
+| `products` | Catalog |
+| `product_images` | Image URLs (Supabase Storage) |
+| `addresses` | Delivery addresses |
+| `orders` | Orders |
+| `order_items` | Line items |
 
 ---
 
-## Pending Integrations
+## Next Steps
 
-- **Razorpay** — payment gateway (order creation, verification, webhook)
-- **Resend** — transactional emails (order confirmation, status updates)
+1. Wire Razorpay on checkout (create order → pay → verify → save order)
+2. Send order emails (Resend or company SMTP)
+3. Clear GoDaddy Registrar Hold → attach `furnis.in` to Cloudflare Pages
+4. Production QA + deploy
 
 ---
 

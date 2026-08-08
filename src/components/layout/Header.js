@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/store/CartContext";
 import { useAuth } from "@/store/AuthContext";
 import MobileMenu from "./MobileMenu";
+import { media } from "@/constants/media";
 import styles from "./Header.module.css";
 
 export default function Header() {
@@ -56,7 +57,7 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className={styles.logoLink}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/logo/furnis-logo.png" alt="Furnish Logo" className={styles.logoImage} />
+            <img src={media.logo} alt="Furnish Logo" className={styles.logoImage} />
           </Link>
 
           {/* Desktop Navigation */}

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/store/CartContext";
 import Button from "@/components/ui/Button";
 import ProductCard from "@/components/shared/ProductCard";
-import { products } from "@/constants/productsData";
+import { createClient } from "@/lib/supabase/client";
+import { fetchProductsByCategory } from "@/lib/supabase/queries";
 import styles from "../productDetail.module.css";
 
 export default function ProductDetailContent({ product }) {
@@ -13,6 +14,7 @@ export default function ProductDetailContent({ product }) {
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [quantity, setQuantity] = useState(1);
+  const [related, setRelated] = useState([]);
   
   // Accordion Toggles
   const [openSections, setOpenSections] = useState({
@@ -20,6 +22,22 @@ export default function ProductDetailContent({ product }) {
     specs: false,
     care: false,
   });
+
+  useEffect(() => {
+    async function loadRelated() {
+      try {
+        const client = createClient();
+        if (!client || !product.category) return;
+        const list = await fetchProductsByCategory(client, product.category);
+        setRelated(
+          list.filter((p) => p.id !== product.id).slice(0, 4)
+        );
+      } catch (err) {
+        console.error("Failed to load related products:", err);
+      }
+    }
+    loadRelated();
+  }, [product.category, product.id]);
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
@@ -37,11 +55,6 @@ export default function ProductDetailContent({ product }) {
   };
 
   const isFavorite = isInWishlist(product.id);
-
-  // Fetch related products (same category, excluding current product)
-  const related = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
 
   return (
     <main className={`container ${styles.main}`}>

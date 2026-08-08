@@ -1,7 +1,9 @@
+import { media } from "./media";
+
 export const heroImages = [
-  "/images/hero-tray-2.jpg",
-  "/images/hero-tray-1.jpg",
-  "/images/hero-board-1.jpg"
+  media.heroTray2,
+  media.heroTray1,
+  media.heroBoard1,
 ];
 
 export const woodData = {
@@ -13,7 +15,7 @@ export const woodData = {
     density: "Length 42cm, Width 21cm & 23cm",
     waterResist: "Keep away from water & moisture. Wipe with a soft dry cloth. Avoid harsh chemicals.",
     bestFor: "Meal Prep & Heavy Chopping",
-    image: "/images/products/acacia-cutting-board.jpg"
+    image: media.acaciaBoard,
   },
   oak: {
     name: "Oak Wood",
@@ -23,6 +25,6 @@ export const woodData = {
     density: "Length 35cm, Width 25cm, Height 8cm",
     waterResist: "Keep away from water & moisture. Wipe with a soft dry cloth. Avoid harsh chemicals.",
     bestFor: "Serving, Hosting & Platters",
-    image: "/images/products/oak-luxe-tray-1.jpg"
-  }
+    image: media.oakTray,
+  },
 };

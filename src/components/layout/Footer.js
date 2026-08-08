@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { media } from "@/constants/media";
 import styles from "./Footer.module.css";
 
 export default function Footer() {
@@ -60,7 +61,7 @@ export default function Footer() {
           <div className={styles.brandCol}>
             <Link href="/" className={styles.logoLink}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/logo/furnis-logo.png" alt="Furnish Logo" className={styles.logoImage} />
+              <img src={media.logo} alt="Furnish Logo" className={styles.logoImage} />
             </Link>
             <p className={styles.description}>
               Discover the warmth and beauty of sustainable wooden kitchenware. Handcrafted with love and care, our exquisite Acacia and Mango wood chopping boards, platters, and organizers are perfect for elevating your culinary experience.
