@@ -117,6 +117,24 @@
   margin-top: var(--space-sm);
 }
 
+.errorMsg {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.errorMsg a {
+  color: #b91c1c;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 /* Success Confirmation Screen */
 .successPanel {
   display: flex;

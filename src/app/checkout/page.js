@@ -8,13 +8,41 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import MotionSection from "@/components/ui/MotionSection";
 import Button from "@/components/ui/Button";
 import { useCart } from "@/store/CartContext";
+import { useAuth } from "@/store/AuthContext";
 import styles from "@/features/checkout/checkout.module.css";
+
+function loadRazorpayScript() {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
+function cartPayload(cart) {
+  return cart.map((item) => ({
+    // Prefer DB UUID; fall back to slug (CartContext uses slug as product.id)
+    productId: item.product.dbId || item.product.id,
+    quantity: item.quantity,
+    selectedColor: item.selectedColor || null,
+  }));
+}
 
 export default function CheckoutPage() {
   const { cart, cartSubtotal, clearCart, isLoaded } = useCart();
+  const { user, isAuthLoading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitLabel, setSubmitLabel] = useState("");
   const [orderConfirmed, setOrderConfirmed] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const [paymentError, setPaymentError] = useState("");
 
   // Form State
   const [formData, setFormData] = useState({
@@ -33,21 +61,132 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setPaymentError("");
 
-    // Simulate Payment and Order Processing
-    setTimeout(() => {
-      const randomOrderNumber = "FURNISH-" + Math.floor(100000 + Math.random() * 900000);
-      setOrderNumber(randomOrderNumber);
-      setOrderConfirmed(true);
+    if (!user) {
+      setPaymentError("Please sign in to place an order.");
+      return;
+    }
+
+    if (!cart.length) {
+      setPaymentError("Your cart is empty.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitLabel("Creating payment order...");
+
+    try {
+      const items = cartPayload(cart);
+
+      const createRes = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+      const createData = await createRes.json();
+
+      if (!createRes.ok) {
+        throw new Error(createData.error || "Could not start payment");
+      }
+
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded || !window.Razorpay) {
+        throw new Error("Could not load Razorpay Checkout. Please try again.");
+      }
+
+      setSubmitLabel("Waiting for payment...");
+
+      const shippingSnapshot = { ...formData };
+      const itemsSnapshot = items;
+
+      const options = {
+        key: createData.keyId,
+        amount: createData.amount,
+        currency: createData.currency || "INR",
+        name: "Furnish",
+        description: "Furniture order payment",
+        order_id: createData.orderId,
+        prefill: {
+          name: `${formData.firstName} ${formData.lastName}`.trim(),
+          email: formData.email,
+          contact: formData.phone,
+        },
+        notes: {
+          address: formData.address,
+        },
+        theme: {
+          color: "#3d2c29",
+        },
+        handler: async function (response) {
+          setSubmitLabel("Confirming payment...");
+          setIsSubmitting(true);
+
+          try {
+            const verifyRes = await fetch("/api/razorpay/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                items: itemsSnapshot,
+                shippingAddress: shippingSnapshot,
+              }),
+            });
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok) {
+              throw new Error(
+                verifyData.error || "Payment verification failed"
+              );
+            }
+
+            setOrderNumber(verifyData.orderNumber);
+            setOrderConfirmed(true);
+            clearCart();
+          } catch (verifyErr) {
+            setPaymentError(
+              verifyErr.message ||
+                "Payment was received but order confirmation failed. Please contact support with your payment ID."
+            );
+          } finally {
+            setIsSubmitting(false);
+            setSubmitLabel("");
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsSubmitting(false);
+            setSubmitLabel("");
+            setPaymentError(
+              "Payment was cancelled. Your cart is unchanged — you can try again."
+            );
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response) {
+        setIsSubmitting(false);
+        setSubmitLabel("");
+        setPaymentError(
+          response?.error?.description ||
+            response?.error?.reason ||
+            "Payment failed. Please try again."
+        );
+      });
+      rzp.open();
+    } catch (err) {
+      setPaymentError(err.message || "Something went wrong starting payment");
       setIsSubmitting(false);
-      clearCart();
-    }, 1500);
+      setSubmitLabel("");
+    }
   };
 
-  if (!isLoaded) {
+  if (!isLoaded || isAuthLoading) {
     return (
       <>
         <Header />
@@ -124,6 +263,20 @@ export default function CheckoutPage() {
           <form onSubmit={handlePlaceOrder} className={styles.grid}>
             {/* Form Column */}
             <div className={styles.formPanel}>
+              {!user && (
+                <div className={styles.errorMsg} role="alert">
+                  You need to{" "}
+                  <Link href="/auth/login?next=/checkout">sign in</Link> before
+                  placing an order so we can save it to your account.
+                </div>
+              )}
+
+              {paymentError && (
+                <div className={styles.errorMsg} role="alert">
+                  {paymentError}
+                </div>
+              )}
+
               {/* Shipping Address */}
               <div>
                 <h3 className={styles.formTitle}>1. Shipping & Delivery</h3>
@@ -228,11 +381,11 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Payment — Razorpay will be wired here in Phase 5 */}
+              {/* Payment */}
               <div style={{ marginTop: "var(--space-xl)" }}>
                 <h3 className={styles.formTitle}>2. Payment</h3>
                 <p style={{ fontSize: "0.9rem", color: "var(--color-secondary)", padding: "var(--space-md)", border: "1px dashed var(--color-border)", borderRadius: "var(--radius-sm)" }}>
-                  Secure payment via Razorpay will open after you confirm your shipping details.
+                  Secure payment via Razorpay opens after you confirm shipping. UPI, cards, and netbanking are supported (test mode).
                 </p>
               </div>
             </div>
@@ -278,10 +431,12 @@ export default function CheckoutPage() {
               <Button
                 type="submit"
                 variant="primary"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !user}
                 className={styles.submitBtn}
               >
-                {isSubmitting ? "Processing Ledger..." : `Place Order of ₹${grandTotal.toLocaleString()}`}
+                {isSubmitting
+                  ? submitLabel || "Processing Ledger..."
+                  : `Place Order of ₹${grandTotal.toLocaleString()}`}
               </Button>
             </div>
           </form>
