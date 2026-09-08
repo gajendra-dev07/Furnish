@@ -41,6 +41,15 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    href: "/admin/team",
+    label: "Team",
+    icon: (
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15a4 4 0 100-8 4 4 0 000 8zm0 0c-3.314 0-6 1.79-6 4v2h12v-2c0-2.21-2.686-4-6-4zm7.5-9.5l1.5 1.5 3-3" />
+      </svg>
+    ),
+  },
 ];
 
 export default function AdminSidebar() {

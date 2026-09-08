@@ -1,20 +1,33 @@
+import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import styles from "../admin.module.css";
 
 export const metadata = { title: "Orders | Admin – Furnish" };
 
+const BADGE = {
+  delivered: styles.badgeGreen,
+  confirmed: styles.badgeGreen,
+  shipped: styles.badgeAmber,
+  processing: styles.badgeAmber,
+  pending: styles.badgeGrey,
+  cancelled: styles.badgeRed,
+};
+
 export default async function AdminOrdersPage() {
   const admin = createAdminClient();
 
-  const { data: orders } = await admin
+  const { data: orders, error } = await admin
     .from("orders")
     .select(
       `
-      id, status, total, created_at,
+      id, status, total, created_at, needs_review,
       profiles(full_name, email)
     `
     )
     .order("created_at", { ascending: false });
+
+  const paidCount = (orders || []).filter((o) => o.status !== "pending").length;
+  const reviewCount = (orders || []).filter((o) => o.needs_review).length;
 
   return (
     <>
@@ -22,12 +35,19 @@ export default async function AdminOrdersPage() {
         <div>
           <h1 className={styles.pageTitle}>Orders</h1>
           <p className={styles.pageSub}>
-            {orders?.length ?? 0} order{orders?.length !== 1 ? "s" : ""} total
+            {paidCount} paid order{paidCount !== 1 ? "s" : ""}
+            {reviewCount > 0 ? ` · ${reviewCount} need review` : ""}
           </p>
         </div>
       </div>
 
       <div className={styles.pageContent}>
+        {error && (
+          <div className={styles.formError} style={{ marginBottom: "16px" }}>
+            Could not load orders: {error.message}
+          </div>
+        )}
+
         <div className={styles.tableCard}>
           {!orders?.length ? (
             <div className={styles.emptyState}>
@@ -47,18 +67,19 @@ export default async function AdminOrdersPage() {
               </svg>
               <p className={styles.emptyStateTitle}>No orders yet</p>
               <p style={{ fontSize: "0.82rem", color: "#9ca3af", marginTop: "4px" }}>
-                Orders will appear here once Razorpay is connected.
+                Orders appear here as soon as a customer completes checkout.
               </p>
             </div>
           ) : (
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Order ID</th>
+                  <th>Order</th>
                   <th>Customer</th>
                   <th>Total</th>
                   <th>Status</th>
                   <th>Date</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -66,8 +87,16 @@ export default async function AdminOrdersPage() {
                   <tr key={order.id}>
                     <td>
                       <span style={{ fontFamily: "monospace", fontSize: "0.78rem" }}>
-                        {order.id.slice(0, 8)}…
+                        {order.id.slice(0, 8).toUpperCase()}
                       </span>
+                      {order.needs_review && (
+                        <span
+                          className={`${styles.badge} ${styles.badgeRed}`}
+                          style={{ marginLeft: "8px" }}
+                        >
+                          review
+                        </span>
+                      )}
                     </td>
                     <td>
                       <div className={styles.productName}>
@@ -81,11 +110,7 @@ export default async function AdminOrdersPage() {
                     <td>
                       <span
                         className={`${styles.badge} ${
-                          order.status === "delivered"
-                            ? styles.badgeGreen
-                            : order.status === "cancelled"
-                            ? styles.badgeRed
-                            : styles.badgeAmber
+                          BADGE[order.status] || styles.badgeGrey
                         }`}
                       >
                         {order.status}
@@ -97,6 +122,14 @@ export default async function AdminOrdersPage() {
                         month: "short",
                         year: "numeric",
                       })}
+                    </td>
+                    <td>
+                      <Link
+                        href={`/admin/orders/${order.id}`}
+                        className={styles.btnSecondary}
+                      >
+                        Open
+                      </Link>
                     </td>
                   </tr>
                 ))}

@@ -1,13 +1,50 @@
-name = "furnish"
-compatibility_date = "2024-09-23"
-compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".open-next/assets"
+# Cloudflare Workers config for the OpenNext adapter (@opennextjs/cloudflare v1.x).
+#
+# NOTE: this project deploys to Cloudflare *Workers*, not Pages. The v1 adapter
+# builds a worker at .open-next/worker.js and serves the static build output
+# through the ASSETS binding. Pages-style config (pages_build_output_dir) and
+# `wrangler pages deploy` do not work with this adapter.
+#
+# TOML ordering matters: every top-level key must appear ABOVE the first
+# [table] header, or it gets parsed as a field of that table instead.
 
-# ─── Local Development Bindings ────────────────────────────────
-# Add KV namespaces, R2 buckets, or D1 databases here if needed.
-# For now all data goes through Supabase over HTTPS — no Cloudflare bindings needed.
+name = "furnish"
+main = ".open-next/worker.js"
+compatibility_date = "2026-04-15"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+
+# ─── Custom Domain ─────────────────────────────────────────────
+# `custom_domain = true` makes Cloudflare create the DNS record and
+# provision the TLS certificate for us — no manual A/CNAME needed.
+# The zone must live in this same Cloudflare account.
+#
+# This is a route onto the SAME Worker, not a second deployment. The
+# free furnish.<subdomain>.workers.dev URL keeps working alongside it.
+#
+# For www, add a Redirect Rule in the dashboard (www -> apex) rather
+# than a second custom domain, so you don't split SEO across two hosts.
+routes = [
+  { pattern = "furnis.in", custom_domain = true }
+]
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[observability]
+enabled = true
 
 # ─── Environment Variables ─────────────────────────────────────
-# Non-secret vars can go here under [vars].
-# Secret vars (API keys) must NEVER go here.
-# Add secrets in: Cloudflare Dashboard → Pages → furnish → Settings → Environment Variables
+# Secrets (Supabase service role, Razorpay secret, Resend key) must NEVER be
+# committed here. Set them with `wrangler secret put <NAME>` or in
+# Cloudflare Dashboard → Workers & Pages → furnish → Settings → Variables.
+#
+# For local `wrangler dev` / preview, put them in .dev.vars (git-ignored).
+#
+# NEXT_PUBLIC_* vars are inlined into the client bundle at build time, so they
+# must be present in the shell/.env.local when `opennextjs-cloudflare build` runs.
+
+# ─── Bindings ──────────────────────────────────────────────────
+# No KV / R2 / D1 needed — all data goes through Supabase over HTTPS.
+# To enable OpenNext's R2 incremental cache later, see:
+# https://opennext.js.org/cloudflare/caching

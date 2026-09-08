@@ -7,10 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pages:build": "opennextjs-cloudflare build",
-    "pages:preview": "wrangler pages dev",
-    "pages:deploy": "wrangler pages deploy",
-    "migrate:images": "node scripts/migrate-images-to-supabase.mjs"
+    "migrate:images": "node scripts/migrate-images-to-supabase.mjs",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "node scripts/sync-dev-vars.mjs && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:vars": "node scripts/sync-dev-vars.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
@@ -23,7 +24,7 @@
     "resend": "^6.18.1"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.20.2",
+    "@opennextjs/cloudflare": "^1.20.6",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",

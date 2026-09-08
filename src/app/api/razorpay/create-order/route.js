@@ -1,19 +1,22 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getRazorpayClient, getRazorpayKeyId } from "@/lib/razorpay";
 import {
   buildPricedLineItems,
   computeOrderTotals,
+  validateShippingAddress,
 } from "@/lib/checkout/orderTotals";
 
 export const runtime = "nodejs";
 
 /**
  * POST /api/razorpay/create-order
- * Body: { items: [{ productId, quantity, selectedColor? }] }
+ * Body: { items: [{ productId, quantity, selectedColor? }], shippingAddress }
  *
  * Recalculates totals from live product prices (never trusts browser amounts),
- * creates a Razorpay order in INR, and returns Checkout.js options.
+ * creates a Razorpay order in INR, and persists a `pending` order so the
+ * webhook can confirm it even if the customer's browser never comes back.
  */
 export async function POST(request) {
   try {
@@ -32,15 +35,17 @@ export async function POST(request) {
     const keyId = getRazorpayKeyId();
     if (!keyId || !process.env.RAZORPAY_KEY_SECRET) {
       return NextResponse.json(
-        { error: "Payment is not configured. Add Razorpay test keys to .env.local." },
+        { error: "Payment is not configured. Add Razorpay keys to .env.local." },
         { status: 503 }
       );
     }
 
     const body = await request.json();
-    const items = body?.items;
 
-    const lineItems = await buildPricedLineItems(supabase, items);
+    // The shipping address is captured up front so the pending order is
+    // complete before payment — the webhook has no browser to ask later.
+    const shipping = validateShippingAddress(body?.shippingAddress);
+    const lineItems = await buildPricedLineItems(supabase, body?.items);
     const { subtotal, gst_amount, total, amountPaise } =
       computeOrderTotals(lineItems);
 
@@ -56,6 +61,46 @@ export async function POST(request) {
         item_count: String(lineItems.length),
       },
     });
+
+    // Persist the order as `pending`. Confirmation (status flip + stock
+    // decrement) happens in confirm_order(), called by whichever of the
+    // verify route or the webhook arrives first.
+    const admin = createAdminClient();
+
+    const { data: dbOrder, error: orderErr } = await admin
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        status: "pending",
+        subtotal,
+        gst_amount,
+        total,
+        shipping_address: shipping,
+        razorpay_order_id: order.id,
+      })
+      .select("id")
+      .single();
+
+    if (orderErr) {
+      throw new Error(`Could not save order: ${orderErr.message}`);
+    }
+
+    const { error: itemsErr } = await admin.from("order_items").insert(
+      lineItems.map((item) => ({
+        order_id: dbOrder.id,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        unit_price: item.unit_price,
+        selected_color: item.selected_color,
+        product_snapshot: item.product_snapshot,
+      }))
+    );
+
+    if (itemsErr) {
+      // Don't leave a payable order with no line items behind.
+      await admin.from("orders").delete().eq("id", dbOrder.id);
+      throw new Error(`Could not save order items: ${itemsErr.message}`);
+    }
 
     return NextResponse.json({
       keyId,
@@ -75,6 +120,8 @@ export async function POST(request) {
       message.includes("invalid") ||
       message.includes("not found") ||
       message.includes("stock") ||
+      message.includes("Missing") ||
+      message.includes("required") ||
       message.includes("too low")
         ? 400
         : 500;
