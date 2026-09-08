@@ -49,18 +49,26 @@ export const CartProvider = ({ children }) => {
   }, [wishlist, isLoaded]);
 
   const addToCart = (product, quantity = 1, color = "") => {
+    // Normalise BEFORE comparing. The old code stored `color || colors[0]` but
+    // matched on the raw `color`, so adding the same item twice never matched
+    // an existing line and silently created a duplicate row instead.
+    const selectedColor = color || product.colors?.[0] || null;
+
     setCart((prevCart) => {
       const existingItemIndex = prevCart.findIndex(
-        (item) => item.product.id === product.id && item.selectedColor === color
+        (item) =>
+          item.product.id === product.id && item.selectedColor === selectedColor
       );
 
       if (existingItemIndex > -1) {
-        const newCart = [...prevCart];
-        newCart[existingItemIndex].quantity += quantity;
-        return newCart;
+        return prevCart.map((item, i) =>
+          i === existingItemIndex
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
       }
 
-      return [...prevCart, { product, quantity, selectedColor: color || product.colors[0] }];
+      return [...prevCart, { product, quantity, selectedColor }];
     });
   };
 

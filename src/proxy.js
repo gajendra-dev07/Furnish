@@ -76,7 +76,9 @@ export async function proxy(request) {
 
 export const config = {
   matcher: [
-    // Run on all routes except static assets and images
-    "/((?!_next/static|_next/image|favicon.ico|images/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Run on all routes except static assets, images, and the Razorpay
+    // webhook — that request carries no session cookies, so refreshing one
+    // is pure latency on a call Razorpay will retry if we're slow.
+    "/((?!_next/static|_next/image|favicon.ico|images/|api/razorpay/webhook|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -81,10 +81,13 @@ export default function CheckoutPage() {
     try {
       const items = cartPayload(cart);
 
+      // The shipping address goes up front now: create-order persists a
+      // `pending` order so the webhook can confirm the payment even if this
+      // browser never makes it back to /api/razorpay/verify.
       const createRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({ items, shippingAddress: formData }),
       });
       const createData = await createRes.json();
 
@@ -98,9 +101,6 @@ export default function CheckoutPage() {
       }
 
       setSubmitLabel("Waiting for payment...");
-
-      const shippingSnapshot = { ...formData };
-      const itemsSnapshot = items;
 
       const options = {
         key: createData.keyId,
@@ -132,8 +132,6 @@ export default function CheckoutPage() {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                items: itemsSnapshot,
-                shippingAddress: shippingSnapshot,
               }),
             });
             const verifyData = await verifyRes.json();
