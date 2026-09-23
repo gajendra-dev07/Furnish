@@ -1,6 +1,9 @@
 .main {
-  padding-top: 120px;
-  min-height: calc(100vh - 80px);
+  padding-top: calc(var(--header-height) + clamp(1.5rem, 4vw, 2.5rem));
+  min-height: calc(100svh - var(--header-height));
+  width: 100%;
+  overflow-x: clip;
+  padding-bottom: var(--section-space-y);
 }
 
 .editorialSection {
@@ -9,6 +12,7 @@
   gap: var(--space-2xl);
   margin-top: var(--space-xl);
   align-items: center;
+  min-width: 0;
 }
 
 .textBlock {
@@ -18,12 +22,13 @@
   line-height: 1.7;
   font-family: var(--font-sans), sans-serif;
   color: var(--color-secondary);
-  font-size: 0.95rem;
+  font-size: clamp(0.9rem, 2vw, 0.95rem);
+  min-width: 0;
 }
 
 .title {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
   color: var(--color-primary);
   font-weight: 400;
   margin: 0;
@@ -33,6 +38,13 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-xl);
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .splitRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .splitRowDark {
@@ -40,9 +52,16 @@
   grid-template-columns: 1fr;
   gap: var(--space-xl);
   background-color: var(--color-bg-secondary);
-  padding: var(--space-2xl) var(--space-xl);
+  padding: clamp(1.25rem, 4vw, 4.5rem) clamp(1rem, 3vw, 3rem);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xs);
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .splitRowDark {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .bottomBlock {
@@ -52,11 +71,12 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-md);
+  padding-inline: var(--space-sm);
 }
 
 .bottomTitle {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 1.6rem;
+  font-size: clamp(1.35rem, 4vw, 1.6rem);
   color: var(--color-primary);
   font-weight: 400;
   margin: 0;

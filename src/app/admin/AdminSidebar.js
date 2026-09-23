@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/store/AuthContext";
 import styles from "./admin.module.css";
 
 const navItems = [
@@ -54,16 +55,24 @@ const navItems = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { signOut } = useAuth();
 
   function isActive(href) {
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
   }
 
+  async function handleSignOut() {
+    await signOut();
+    router.replace("/auth/login");
+    router.refresh();
+  }
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarBrand}>
-        <Link href="/admin" className={styles.sidebarLogo}>
+        <Link href="/" className={styles.sidebarLogo} aria-label="Furnish home">
           Furnish
         </Link>
         <div className={styles.sidebarSub}>Admin Panel</div>
@@ -92,6 +101,12 @@ export default function AdminSidebar() {
           </svg>
           <span>View Store</span>
         </Link>
+        <button type="button" className={styles.signOutBtn} onClick={handleSignOut}>
+          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          </svg>
+          <span>Sign out</span>
+        </button>
       </div>
     </aside>
   );

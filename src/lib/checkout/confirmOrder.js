@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getRazorpayClient } from "@/lib/razorpay";
+import { fetchRazorpayOrder } from "@/lib/razorpay";
 import { sendOrderConfirmationEmail } from "@/lib/email/orderConfirmation";
 
 /**
@@ -60,8 +60,7 @@ export async function confirmPaidOrder(
     // browser path has no trustworthy amount and must ask Razorpay.
     let actualPaise = paidAmountPaise;
     if (actualPaise == null) {
-      const razorpay = getRazorpayClient();
-      const rzOrder = await razorpay.orders.fetch(razorpayOrderId);
+      const rzOrder = await fetchRazorpayOrder(razorpayOrderId);
       actualPaise = rzOrder ? Number(rzOrder.amount) : null;
     }
 

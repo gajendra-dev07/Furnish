@@ -1,7 +1,7 @@
 /* ─── Admin Shell Layout ──────────────────────────────────── */
 .shell {
   display: flex;
-  min-height: 100vh;
+  min-height: 100svh;
   background: #f4f5f7;
   font-family: "Poppins", sans-serif;
 }
@@ -16,7 +16,7 @@
   padding: 0;
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 100svh;
   overflow-y: auto;
 }
 
@@ -83,6 +83,9 @@
 .sidebarFooter {
   padding: 16px 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .storeLink {
@@ -96,6 +99,25 @@
 }
 
 .storeLink:hover {
+  color: #fff;
+}
+
+.signOutBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.15s;
+}
+
+.signOutBtn:hover {
   color: #fff;
 }
 
@@ -659,9 +681,9 @@
 }
 
 /* ─── Responsive ──────────────────────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .sidebar {
-    width: 60px;
+    width: 72px;
   }
   .sidebarLogo,
   .sidebarSub,
@@ -672,11 +694,42 @@
   .navItem {
     justify-content: center;
     padding: 12px;
+    min-height: 44px;
   }
   .formGrid {
     grid-template-columns: 1fr;
   }
   .pageContent {
     padding: 16px;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .shell {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .sidebarNav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 8px;
+  }
+  .sidebarLogo,
+  .sidebarSub,
+  .navItem span,
+  .storeLink span {
+    display: none;
+  }
+  .pageContent {
+    padding: 12px;
   }
 }

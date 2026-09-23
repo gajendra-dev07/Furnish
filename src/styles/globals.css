@@ -10,6 +10,10 @@
 html {
   scroll-behavior: smooth;
   height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 body {
@@ -22,12 +26,18 @@ body {
   transition: background-color var(--transition-normal), color var(--transition-normal);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  overflow-x: hidden;
+  min-height: 100%;
+  min-height: 100svh;
+  /* Prefer fixing overflow sources; this is a last-line safety net */
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100%; /* never 100vw — scrollbar makes 100vw overflow and shift the page */
 }
 
 main {
   flex-grow: 1;
+  width: 100%;
+  max-width: 100%;
 }
 
 a {
@@ -40,7 +50,11 @@ a:hover {
   color: var(--color-accent);
 }
 
-img {
+img,
+picture,
+video,
+canvas,
+svg {
   max-width: 100%;
   height: auto;
   display: block;
@@ -53,6 +67,7 @@ button, input, select, textarea {
   background: none;
   border: none;
   outline: none;
+  max-width: 100%;
 }
 
 button {
@@ -78,37 +93,56 @@ button {
   background: var(--color-accent);
 }
 
-/* Global Container Utility */
+/* Global Container Utility — centered, guttered, never infinite stretch */
 .container {
-  width: 100%;
-  max-width: var(--max-width-site);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+  width: min(100% - (var(--page-gutter) * 2), var(--max-width-site));
+  margin-inline: auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Extra-small phones (320–374): keep readable gutters, compact header */
+@media (max-width: 374px) {
+  :root {
+    --page-gutter: 1rem;
+    --header-height: 60px;
+    --header-height-scrolled: 56px;
+    --touch-min: 40px;
+  }
 }
 
 @media (min-width: 768px) {
-  .container {
-    padding-left: var(--space-xl);
-    padding-right: var(--space-xl);
+  :root {
+    --header-height: 80px;
   }
 }
 
-@media (min-width: 1440px) {
+@media (min-width: 1536px) {
   .container {
-    padding-left: var(--space-2xl);
-    padding-right: var(--space-2xl);
+    width: min(100% - (var(--page-gutter) * 2), var(--max-width-site));
   }
+}
+
+/* Shared page shell used across storefront routes */
+.pageShell {
+  padding-top: calc(var(--header-height) + clamp(1.5rem, 4vw, 2.5rem));
+  min-height: calc(100svh - var(--header-height));
+  width: 100%;
 }
 
 /* Typography Classes */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif), Georgia, serif;
-  font-weight: 300; /* Editorial light weights */
+  font-weight: 300;
   line-height: 1.15;
   color: var(--color-primary);
   letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+p {
+  overflow-wrap: break-word;
 }
 
 .text-meta {
@@ -123,7 +157,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .heading-hero {
-  font-size: clamp(2.5rem, 6.5vw, 5.5rem);
+  font-size: clamp(2.125rem, 6.5vw, 5.5rem);
   line-height: 1.05;
   margin-bottom: var(--space-md);
   font-weight: 300;
@@ -131,14 +165,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .heading-section {
-  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-size: clamp(1.75rem, 4.5vw, 3.25rem);
   font-weight: 300;
   margin-bottom: var(--space-sm);
   letter-spacing: -0.03em;
 }
 
 .heading-sub {
-  font-size: clamp(1rem, 2vw, 1.15rem);
+  font-size: clamp(0.9375rem, 2vw, 1.15rem);
   color: var(--color-secondary);
   max-width: 650px;
   margin-bottom: var(--space-2xl);
@@ -164,14 +198,21 @@ h1, h2, h3, h4, h5, h6 {
 
 .form-input {
   width: 100%;
+  min-height: var(--touch-min);
   padding: var(--space-sm) var(--space-md);
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xs);
   font-family: var(--font-sans), sans-serif;
-  font-size: 0.875rem;
+  font-size: 1rem; /* 16px avoids iOS zoom on focus */
   font-weight: 300;
   transition: border-color var(--transition-fast);
+}
+
+@media (min-width: 768px) {
+  .form-input {
+    font-size: 0.875rem;
+  }
 }
 
 .form-input:focus {
@@ -192,8 +233,10 @@ h1, h2, h3, h4, h5, h6 {
   transition: transform var(--transition-slow);
 }
 
-.luxury-image-wrapper:hover .luxury-image {
-  transform: scale(1.03);
+@media (hover: hover) and (pointer: fine) {
+  .luxury-image-wrapper:hover .luxury-image {
+    transform: scale(1.03);
+  }
 }
 
 /* Reveal Animations & Effects */
@@ -220,4 +263,33 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes loading {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-up {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+/* Landscape phones: keep fixed headers / heroes usable */
+@media (max-height: 480px) and (orientation: landscape) {
+  :root {
+    --header-height: 56px;
+    --section-space-y: 2.5rem;
+  }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -9,7 +9,15 @@ import MotionSection from "@/components/ui/MotionSection";
 import Button from "@/components/ui/Button";
 import { useCart } from "@/store/CartContext";
 import { useAuth } from "@/store/AuthContext";
+import { createClient } from "@/lib/supabase/client";
 import styles from "@/features/checkout/checkout.module.css";
+
+const NEW_ADDRESS = "new";
+
+function splitName(fullName) {
+  const parts = String(fullName || "").trim().split(/\s+/).filter(Boolean);
+  return { firstName: parts[0] || "", lastName: parts.slice(1).join(" ") };
+}
 
 function loadRazorpayScript() {
   return new Promise((resolve) => {
@@ -37,7 +45,10 @@ function cartPayload(cart) {
 
 export default function CheckoutPage() {
   const { cart, cartSubtotal, clearCart, isLoaded } = useCart();
-  const { user, isAuthLoading } = useAuth();
+  const { user, profile, isAuthLoading } = useAuth();
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(NEW_ADDRESS);
+  const [appliedPrefill, setAppliedPrefill] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitLabel, setSubmitLabel] = useState("");
   const [orderConfirmed, setOrderConfirmed] = useState(false);
@@ -59,6 +70,84 @@ export default function CheckoutPage() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Fill in what we already know about the signed-in customer rather than
+  // making them retype it. Anything they've already edited is left alone.
+  // Applied during render rather than in an effect so the form never paints
+  // blank for a frame once the profile resolves.
+  const prefillKey = user
+    ? `${user.id}|${profile?.full_name ?? ""}|${profile?.phone ?? ""}`
+    : null;
+
+  if (prefillKey && prefillKey !== appliedPrefill) {
+    const { firstName, lastName } = splitName(profile?.full_name);
+    setAppliedPrefill(prefillKey);
+    setFormData((prev) => ({
+      ...prev,
+      firstName: prev.firstName || firstName,
+      lastName: prev.lastName || lastName,
+      email: prev.email || user.email || "",
+      phone: prev.phone || profile?.phone || "",
+    }));
+  }
+
+  const applyAddress = useCallback((address) => {
+    setFormData((prev) => ({
+      ...prev,
+      address: [address.line1, address.line2].filter(Boolean).join(", "),
+      city: address.city || "",
+      state: address.state || "",
+      zip: address.pincode || "",
+    }));
+  }, []);
+
+  // /account/addresses is a working address book that checkout used to ignore.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+
+    async function loadAddresses() {
+      const supabase = createClient();
+      if (!supabase) return;
+
+      const { data } = await supabase
+        .from("addresses")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("is_default", { ascending: false })
+        .order("created_at", { ascending: true });
+
+      if (cancelled || !data?.length) return;
+
+      setAddresses(data);
+      setSelectedAddressId(data[0].id);
+      applyAddress(data[0]);
+    }
+
+    loadAddresses();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, applyAddress]);
+
+  const handleAddressSelect = (e) => {
+    const value = e.target.value;
+    setSelectedAddressId(value);
+
+    if (value === NEW_ADDRESS) {
+      setFormData((prev) => ({
+        ...prev,
+        address: "",
+        city: "",
+        state: "",
+        zip: "",
+      }));
+      return;
+    }
+
+    const chosen = addresses.find((a) => String(a.id) === value);
+    if (chosen) applyAddress(chosen);
   };
 
   const handlePlaceOrder = async (e) => {
@@ -278,6 +367,29 @@ export default function CheckoutPage() {
               {/* Shipping Address */}
               <div>
                 <h3 className={styles.formTitle}>1. Shipping & Delivery</h3>
+
+                {addresses.length > 0 && (
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="savedAddress">
+                      Saved Addresses
+                    </label>
+                    <select
+                      id="savedAddress"
+                      value={selectedAddressId}
+                      onChange={handleAddressSelect}
+                      className="form-input"
+                    >
+                      {addresses.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.label ? `${a.label} — ` : ""}
+                          {[a.line1, a.city, a.pincode].filter(Boolean).join(", ")}
+                        </option>
+                      ))}
+                      <option value={NEW_ADDRESS}>Use a different address</option>
+                    </select>
+                  </div>
+                )}
+
                 <div className={`${styles.inputGrid} ${styles.inputGrid2}`}>
                   <div className="form-group">
                     <label className="form-label">First Name</label>

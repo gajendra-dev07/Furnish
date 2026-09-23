@@ -15,4 +15,5 @@ export const media = {
   boardFlat: `${STORAGE_BASE}/products/chopping-board-flat.jpg`,
   boardV2: `${STORAGE_BASE}/products/chopping-board-v2.jpg`,
   boardH1: `${STORAGE_BASE}/products/chopping-board-h1.jpg`,
+  promoOakTray: "/images/promo/oak-tray-cutout.png",
 };

@@ -25,7 +25,10 @@ export default async function CategoriesPage() {
         as="main"
         className="container"
         delay={0.2}
-        style={{ paddingTop: "120px", minHeight: "calc(100vh - 80px)" }}
+        style={{
+          paddingTop: "calc(var(--header-height) + clamp(1.5rem, 4vw, 2.5rem))",
+          minHeight: "calc(100svh - var(--header-height))",
+        }}
       >
         <SectionHeading
           badge="Luxury Selections"

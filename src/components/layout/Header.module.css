@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 80px;
+  height: var(--header-height);
   display: flex;
   align-items: center;
   z-index: 100;
@@ -13,7 +13,7 @@
 }
 
 .scrolled {
-  height: 60px;
+  height: var(--header-height-scrolled);
   background-color: var(--color-bg-primary);
   border-bottom: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
@@ -27,28 +27,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  padding: 0 var(--space-md);
-  max-width: var(--max-width-site);
+  gap: var(--space-sm);
+  width: min(100% - (var(--page-gutter) * 2), var(--max-width-site));
   margin: 0 auto;
-}
-
-@media (min-width: 768px) {
-  .container {
-    padding: 0 var(--space-xl);
-  }
-}
-
-@media (min-width: 1440px) {
-  .container {
-    padding: 0 var(--space-2xl);
-  }
+  padding: 0;
+  min-width: 0;
 }
 
 .logoLink {
   display: flex;
   align-items: center;
   text-decoration: none;
+  flex-shrink: 0;
   transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
@@ -58,18 +48,58 @@
 }
 
 .logoImage {
-  height: 45px;
+  height: clamp(38px, 10vw, 48px);
   width: auto;
+  max-width: min(160px, 42vw);
   object-fit: contain;
+}
+
+@media (max-width: 374px) {
+  .container {
+    gap: 4px;
+    width: min(100% - 1.5rem, var(--max-width-site));
+  }
+
+  .logoImage {
+    height: 40px;
+    max-width: 130px;
+  }
+}
+
+/* Bigger glyph, same header bar height — hit area stays within header */
+.iconBtn svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.mobileMenuBtn svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 374px) {
+  .iconBtn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mobileMenuBtn svg {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 .desktopNav {
   display: none;
   align-items: center;
-  gap: var(--space-xl);
+  gap: clamp(1.25rem, 2.5vw, 3rem);
+  min-width: 0;
 }
 
-@media (min-width: 768px) {
+/* Full nav from small laptop up — tablet keeps the drawer */
+@media (min-width: 1024px) {
   .desktopNav {
     display: flex;
   }
@@ -86,6 +116,7 @@
   position: relative;
   padding: var(--space-xs) 0;
   transition: color var(--transition-fast);
+  white-space: nowrap;
 }
 
 .navLink::after {
@@ -120,12 +151,49 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 0;
+  flex-shrink: 1;
+  min-width: 0;
+  justify-content: flex-end;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 375px) {
+  .actions {
+    gap: 2px;
+  }
+}
+
+@media (min-width: 420px) {
+  .actions {
+    gap: var(--space-2xs);
+  }
+}
+
+@media (min-width: 1024px) {
   .actions {
     gap: var(--space-md);
+    flex-shrink: 0;
+  }
+}
+
+.hideOnXs {
+  display: none;
+}
+
+@media (min-width: 375px) {
+  .hideOnXs {
+    display: flex;
+  }
+}
+
+/* Wishlist / Account / Cart: header on desktop only (must beat .iconBtn display) */
+.iconBtn.desktopOnlyAction {
+  display: none !important;
+}
+
+@media (min-width: 1024px) {
+  .iconBtn.desktopOnlyAction {
+    display: flex !important;
   }
 }
 
@@ -135,12 +203,15 @@
   align-items: center;
   justify-content: center;
   color: var(--color-primary);
-  width: 38px;
-  height: 38px;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
   border-radius: var(--radius-full);
   background: transparent;
   border: none;
   cursor: pointer;
+  flex-shrink: 0;
   transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 
@@ -152,8 +223,8 @@
 
 .badge {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 6px;
+  right: 6px;
   background-color: var(--color-accent);
   color: #ffffff;
   font-family: var(--font-sans), sans-serif;
@@ -173,8 +244,10 @@
   align-items: center;
   justify-content: center;
   color: var(--color-primary);
-  width: 36px;
-  height: 36px;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -185,7 +258,7 @@
   color: var(--color-accent);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .mobileMenuBtn {
     display: none;
   }
@@ -248,44 +321,47 @@
 }
 
 .searchContainer {
-  width: 100%;
-  max-width: var(--max-width-site);
+  width: min(100% - (var(--page-gutter) * 2), var(--max-width-site));
   margin: 0 auto;
-  padding: 0 var(--space-md);
-}
-
-@media (min-width: 768px) {
-  .searchContainer {
-    padding: 0 var(--space-xl);
-  }
-}
-
-@media (min-width: 1440px) {
-  .searchContainer {
-    padding: 0 var(--space-2xl);
-  }
+  padding: 0;
 }
 
 .searchForm {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--space-sm);
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
 }
 
+@media (min-width: 420px) {
+  .searchForm {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
 .searchInput {
   flex: 1;
+  min-width: 0;
+  min-height: var(--touch-min);
   padding: var(--space-sm) var(--space-md);
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xs);
   font-family: var(--font-sans), sans-serif;
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--color-primary);
   outline: none;
   transition: border-color var(--transition-fast);
+}
+
+@media (min-width: 768px) {
+  .searchInput {
+    font-size: 0.875rem;
+  }
 }
 
 .searchInput:focus {
@@ -296,6 +372,7 @@
   background-color: var(--color-primary);
   color: var(--color-bg-primary);
   padding: var(--space-sm) var(--space-md);
+  min-height: var(--touch-min);
   border-radius: var(--radius-xs);
   font-family: var(--font-sans), sans-serif;
   font-size: 0.75rem;
@@ -305,6 +382,7 @@
   border: 1px solid var(--color-primary);
   cursor: pointer;
   transition: background-color var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .searchSubmitBtn:hover {
@@ -320,5 +398,12 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-height: 480px) and (orientation: landscape) {
+  .header,
+  .scrolled {
+    height: 56px;
   }
 }

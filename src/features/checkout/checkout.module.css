@@ -1,6 +1,8 @@
 .main {
-  padding-top: 120px;
-  min-height: calc(100vh - 80px);
+  padding-top: calc(var(--header-height) + clamp(1.5rem, 4vw, 2.5rem));
+  min-height: calc(100svh - var(--header-height));
+  width: 100%;
+  overflow-x: clip;
 }
 
 .grid {
@@ -8,11 +10,12 @@
   grid-template-columns: 1fr;
   gap: var(--space-2xl);
   margin-top: var(--space-xl);
+  min-width: 0;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1024px) {
   .grid {
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
     align-items: start;
   }
 }
@@ -21,12 +24,13 @@
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xs);
-  padding: var(--space-xl);
+  padding: clamp(1rem, 3vw, 3rem);
+  min-width: 0;
 }
 
 .formTitle {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 1.35rem;
+  font-size: clamp(1.15rem, 3vw, 1.35rem);
   color: var(--color-primary);
   margin-bottom: var(--space-lg);
   border-bottom: 1px solid var(--color-border);
@@ -37,11 +41,12 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-md);
+  min-width: 0;
 }
 
-@media (min-width: 576px) {
+@media (min-width: 480px) {
   .inputGrid2 {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -49,10 +54,13 @@
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xs);
-  padding: var(--space-lg);
+  padding: clamp(1rem, 3vw, 2rem);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  min-width: 0;
+  position: sticky;
+  top: calc(var(--header-height-scrolled) + 16px);
 }
 
 .summaryTitle {
@@ -77,8 +85,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-sm);
   font-family: var(--font-sans), sans-serif;
   font-size: 0.8125rem;
+  min-width: 0;
 }
 
 .itemName {
@@ -87,11 +97,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  max-width: min(180px, 55vw);
+  min-width: 0;
 }
 
 .itemPrice {
   color: var(--color-secondary);
+  flex-shrink: 0;
 }
 
 .priceBreakdown {
@@ -105,6 +117,7 @@
 .totalRow {
   display: flex;
   justify-content: space-between;
+  gap: var(--space-md);
   font-family: var(--font-sans), sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
@@ -113,6 +126,7 @@
 
 .submitBtn {
   width: 100%;
+  min-height: var(--touch-min);
   height: 48px;
   margin-top: var(--space-sm);
 }
@@ -127,6 +141,7 @@
   padding: var(--space-md);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-lg);
+  overflow-wrap: anywhere;
 }
 
 .errorMsg a {
@@ -135,18 +150,18 @@
   text-decoration: underline;
 }
 
-/* Success Confirmation Screen */
 .successPanel {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--space-4xl) var(--space-xl);
+  padding: clamp(2.5rem, 8vw, 9.5rem) var(--space-md);
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xs);
   max-width: 600px;
+  width: 100%;
   margin: var(--space-2xl) auto;
 }
 
@@ -157,7 +172,7 @@
 
 .successTitle {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 5vw, 2rem);
   margin-bottom: var(--space-sm);
 }
 
@@ -184,6 +199,7 @@
 .receiptRow {
   display: flex;
   justify-content: space-between;
+  gap: var(--space-sm);
   font-family: var(--font-sans), sans-serif;
   font-size: 0.8125rem;
   padding: 6px 0;

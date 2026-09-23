@@ -1,40 +1,45 @@
 .sliderSection {
-  padding: 80px 0;
+  padding: clamp(3rem, 8vw, 5rem) 0;
   background-color: var(--color-bg-primary);
   border-top: 1px solid var(--color-border);
+  width: 100%;
+  overflow-x: clip;
 }
 
 .sliderTitle {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 350;
   color: var(--color-primary);
-  margin-bottom: 32px;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
   letter-spacing: -0.01em;
 }
 
 .sliderWrapper {
   position: relative;
   width: 100%;
+  min-width: 0;
 }
 
 .scrollContainer {
   display: flex;
-  gap: 24px;
+  gap: clamp(12px, 2vw, 24px);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding: 10px 4px 30px 4px;
   margin-bottom: -10px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 .scrollContainer::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
 
 .sliderItem {
-  flex: 0 0 calc(25% - 18px); /* 4 items per page on desktop */
+  flex: 0 0 calc(25% - 18px);
   min-width: 0;
   scroll-snap-align: start;
   transition: transform 0.3s ease;
@@ -42,7 +47,7 @@
 
 .scrollContainer::after {
   content: "";
-  flex: 0 0 24px; /* Ensure spacer at the end respects padding-right */
+  flex: 0 0 24px;
   pointer-events: none;
 }
 
@@ -59,6 +64,8 @@
   border: none;
   cursor: pointer;
   padding: 8px;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,36 +95,27 @@
   user-select: none;
 }
 
-/* Tablet Layout */
-@media (max-width: 1024px) {
+@media (max-width: 1279px) {
   .sliderItem {
-    flex: 0 0 calc(33.333% - 16px); /* 3 items visible */
-    min-width: 0;
-  }
-  .sliderSection {
-    padding: 60px 0;
+    flex: 0 0 calc(33.333% - 16px);
   }
 }
 
-/* Large Mobile Layout */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .sliderItem {
-    flex: 0 0 calc(50% - 12px); /* 2 items visible */
-    min-width: 0;
-  }
-  .scrollContainer {
-    gap: 16px;
+    flex: 0 0 calc(50% - 12px);
   }
 }
 
-/* Small Mobile Layout (Peek effect) */
-@media (max-width: 480px) {
+@media (max-width: 479px) {
   .sliderItem {
-    flex: 0 0 calc(80% - 12px); /* 1.25 items visible, showing peek of the next card */
-    min-width: 0;
+    flex: 0 0 min(85%, 280px);
   }
-  .sliderTitle {
-    font-size: 1.625rem;
-    margin-bottom: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sliderItem,
+  .navButton {
+    transition: none;
   }
 }

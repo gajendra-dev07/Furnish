@@ -82,7 +82,12 @@ function LoginForm() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Password</label>
+          <div className={styles.passwordRow}>
+            <label className="form-label">Password</label>
+            <Link href="/auth/forgot-password" className={styles.forgotLink}>
+              Forgot password?
+            </Link>
+          </div>
           <input
             type="password"
             value={password}

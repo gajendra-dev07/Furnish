@@ -31,8 +31,8 @@ export default async function ProductPage({ params }) {
         <Header />
         <main
           style={{
-            paddingTop: "180px",
-            minHeight: "calc(100vh - 80px)",
+            paddingTop: "calc(var(--header-height) + clamp(2rem, 6vw, 3.5rem))",
+            minHeight: "calc(100svh - var(--header-height))",
             textAlign: "center",
           }}
         >

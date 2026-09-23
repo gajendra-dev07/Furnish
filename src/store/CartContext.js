@@ -1,13 +1,52 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { fetchProductsBySlugs } from "@/lib/supabase/queries";
 
 const CartContext = createContext();
+
+function slugOf(item) {
+  return item?.product?.slug || item?.product?.id || null;
+}
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // The cart caches whole product objects, price included, in localStorage.
+  // Re-read the live rows on load so a returning customer isn't shown a price
+  // that changed while their cart sat there. Checkout recalculates from the
+  // database anyway; this keeps the displayed price honest.
+  async function refreshCartPrices(storedCart) {
+    const slugs = [...new Set(storedCart.map(slugOf).filter(Boolean))];
+    if (slugs.length === 0) return;
+
+    try {
+      const client = createClient();
+      if (!client) return;
+
+      const fresh = await fetchProductsBySlugs(client, slugs);
+      if (fresh.length === 0) return;
+
+      const bySlug = new Map(fresh.map((p) => [p.slug, p]));
+
+      setCart((prevCart) => {
+        let changed = false;
+        const next = prevCart.map((item) => {
+          const latest = bySlug.get(slugOf(item));
+          if (!latest || latest.price === item.product.price) return item;
+          changed = true;
+          return { ...item, product: { ...item.product, ...latest } };
+        });
+        return changed ? next : prevCart;
+      });
+    } catch (err) {
+      // A failed refresh only means the cached price stays on screen.
+      console.error("Failed to refresh cart prices:", err);
+    }
+  }
 
   // Load cart & wishlist from LocalStorage on mount
   useEffect(() => {
@@ -15,7 +54,8 @@ export const CartProvider = ({ children }) => {
       const storedCart = localStorage.getItem("furnish_cart");
       const storedWishlist = localStorage.getItem("furnish_wishlist");
       setTimeout(() => {
-        if (storedCart) setCart(JSON.parse(storedCart));
+        const parsedCart = storedCart ? JSON.parse(storedCart) : [];
+        if (storedCart) setCart(parsedCart);
         if (storedWishlist) {
           const parsed = JSON.parse(storedWishlist);
           const uniqueWishlist = [];
@@ -30,6 +70,7 @@ export const CartProvider = ({ children }) => {
           setWishlist(uniqueWishlist);
         }
         setIsLoaded(true);
+        refreshCartPrices(parsedCart);
       }, 0);
     }
   }, []);

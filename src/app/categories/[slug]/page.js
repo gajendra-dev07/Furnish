@@ -42,8 +42,8 @@ export default async function CategoryPage({ params }) {
         <Header />
         <main
           style={{
-            paddingTop: "180px",
-            minHeight: "calc(100vh - 80px)",
+            paddingTop: "calc(var(--header-height) + clamp(2rem, 6vw, 3.5rem))",
+            minHeight: "calc(100svh - var(--header-height))",
             textAlign: "center",
           }}
         >
@@ -72,7 +72,12 @@ export default async function CategoryPage({ params }) {
   return (
     <>
       <Header />
-      <main style={{ paddingTop: "120px", minHeight: "calc(100vh - 80px)" }}>
+      <main
+        style={{
+          paddingTop: "calc(var(--header-height) + clamp(1.5rem, 4vw, 2.5rem))",
+          minHeight: "calc(100svh - var(--header-height))",
+        }}
+      >
         <div className="container">
           {/* Breadcrumb */}
           <div

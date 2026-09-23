@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getRazorpayClient, getRazorpayKeyId } from "@/lib/razorpay";
+import { createRazorpayOrder, getRazorpayKeyId } from "@/lib/razorpay";
 import {
   buildPricedLineItems,
   computeOrderTotals,
@@ -49,10 +49,9 @@ export async function POST(request) {
     const { subtotal, gst_amount, total, amountPaise } =
       computeOrderTotals(lineItems);
 
-    const razorpay = getRazorpayClient();
     const receipt = `furnish_${user.id.slice(0, 8)}_${Date.now()}`;
 
-    const order = await razorpay.orders.create({
+    const order = await createRazorpayOrder({
       amount: amountPaise,
       currency: "INR",
       receipt: receipt.slice(0, 40),

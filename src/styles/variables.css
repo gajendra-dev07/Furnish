@@ -22,6 +22,11 @@
   --color-bg-secondary-hsl: 0, 0%, 100%;
   --color-bg-secondary: #FFFFFF; /* Gallery White */
 
+  /* Aliases — older auth styles used these names */
+  --color-background: var(--color-bg-primary);
+  --color-surface: var(--color-bg-secondary);
+  --color-on-primary: var(--color-bg-secondary);
+
   --color-stone: #E8E3DA; /* Architectural Stone / Clay Grey */
   --color-stone-dark: #CFC8BC;
   
@@ -65,6 +70,21 @@
   /* Layout Widths */
   --max-width-site: 1560px;
   --max-width-content: 1280px;
+
+  /* Responsive breakpoints (reference tokens — media queries still use px) */
+  --bp-xs: 375px;   /* small mobile */
+  --bp-sm: 420px;   /* large mobile */
+  --bp-md: 768px;   /* tablet */
+  --bp-lg: 1024px;  /* small laptop */
+  --bp-xl: 1280px;  /* desktop */
+  --bp-2xl: 1536px; /* large desktop */
+
+  /* Fluid page gutters — keep content off the screen edge */
+  --page-gutter: clamp(1rem, 4vw, 4.5rem);
+  --section-space-y: clamp(3rem, 8vw, 6.5rem);
+  --header-height: 72px;
+  --header-height-scrolled: 60px;
+  --touch-min: 44px;
 }
 
 [data-theme="dark"] {
@@ -90,7 +110,11 @@
   
   --color-bg-secondary-hsl: 0, 0%, 12%;
   --color-bg-secondary: #1D1D1D; /* Obsidian Box Accent */
-  
+
+  --color-background: var(--color-bg-primary);
+  --color-surface: var(--color-bg-secondary);
+  --color-on-primary: var(--color-bg-secondary);
+
   --color-stone: #2A2A2A;
   --color-stone-dark: #3E3E3E;
 

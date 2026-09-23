@@ -29,7 +29,7 @@ export default function ProductCard({ product, variant = "default" }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product, 1, product.colors[0]);
+    addToCart(product, 1, product.colors?.[0]);
   };
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
@@ -71,7 +71,7 @@ export default function ProductCard({ product, variant = "default" }) {
 
           {/* Product Image or Premium Placeholder */}
           {product.images && product.images.length > 0 && product.images[0] ? (
-            <>
+            <div className={styles.imageStage}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={product.images[0]}
@@ -80,8 +80,8 @@ export default function ProductCard({ product, variant = "default" }) {
                 loading="lazy"
               />
 
-              {/* Product Image Secondary Detail (if exists) */}
-              {hasSecondImage && (
+              {/* Featured cards only: secondary hover swap */}
+              {isFeatured && hasSecondImage && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={product.images[1]}
@@ -90,7 +90,7 @@ export default function ProductCard({ product, variant = "default" }) {
                   loading="lazy"
                 />
               )}
-            </>
+            </div>
           ) : (
             <div className={styles.placeholderContainer}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className={styles.placeholderIcon}>

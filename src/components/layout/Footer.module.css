@@ -1,30 +1,108 @@
 .footer {
   background-color: var(--color-bg-secondary);
   border-top: 1px solid var(--color-border);
-  padding: var(--space-3xl) 0 var(--space-xl) 0;
-  margin-top: var(--space-4xl);
+  padding: var(--section-space-y) 0 var(--space-xl) 0;
+  margin-top: clamp(3rem, 8vw, 9.5rem);
+  width: 100%;
+  overflow-x: clip;
+}
+
+/* Home ends with a full-bleed promo — no gap above footer */
+.footerFlush {
+  margin-top: 0;
 }
 
 :global([data-theme="dark"]) .footer {
   background-color: #121212;
 }
 
-.container {
+/* Do NOT name this .container — it overrides global gutters and pins content to the edges */
+.inner {
   display: flex;
   flex-direction: column;
   gap: var(--space-3xl);
+  min-width: 0;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-2xl);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-xl) var(--space-lg);
+  width: 100%;
+  min-width: 0;
+  align-items: start;
+}
+
+/* Brand + newsletter use full row on phones so right side isn’t empty */
+.brandCol,
+.newsletterCol {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    gap: var(--space-2xl) var(--space-xl);
+  }
 }
 
 @media (min-width: 768px) {
   .grid {
-    grid-template-columns: 2fr 1fr 1fr 2fr;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--space-xl);
+  }
+
+  .brandCol {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .menuCol {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .collectionsCol {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  /* Stay Updated flush left under the full footer width (tablet) */
+  .newsletterCol {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    align-items: flex-start;
+    justify-self: start;
+    text-align: left;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .newsletterCol {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .newsletterCol .socials {
+    justify-content: flex-start;
+  }
+
+  .newsletterCol .form {
+    margin-inline: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  }
+
+  .brandCol,
+  .menuCol,
+  .collectionsCol,
+  .newsletterCol {
+    grid-column: auto;
+    grid-row: auto;
   }
 }
 
@@ -32,6 +110,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
 }
 
 .logoLink {
@@ -41,8 +122,9 @@
 }
 
 .logoImage {
-  height: 52px;
+  height: clamp(40px, 10vw, 52px);
   width: auto;
+  max-width: 100%;
   object-fit: contain;
 }
 
@@ -52,7 +134,14 @@
   font-weight: 300;
   color: var(--color-secondary);
   line-height: 1.7;
-  max-width: 320px;
+  max-width: none;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .description {
+    max-width: 28rem;
+  }
 }
 
 .contact {
@@ -75,6 +164,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .title {
@@ -111,6 +202,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
 }
 
 .newsletterDesc {
@@ -119,33 +213,88 @@
   font-weight: 300;
   color: var(--color-secondary);
   line-height: 1.6;
-  max-width: 320px;
+  max-width: none;
+  width: 100%;
 }
 
 .form {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  max-width: 320px;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  max-width: 22rem;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-@media (min-width: 992px) {
-  .form {
-    flex-direction: row;
-    align-items: stretch;
+@media (min-width: 1024px) {
+  .newsletterDesc {
+    max-width: 22rem;
   }
 }
 
+.socials {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0;
+}
+
+/* Desktop: icons after email form; mobile keeps them under Stay Updated */
+@media (min-width: 1024px) {
+  .socials {
+    order: 10;
+    margin-top: 0.25rem;
+  }
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--color-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  transition: color var(--transition-fast), border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.socialLink:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-primary);
+}
+
+.socialLink svg {
+  flex-shrink: 0;
+}
+
 .input {
-  flex-grow: 1;
-  padding: var(--space-sm) var(--space-md);
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  min-height: 44px;
+  height: 44px;
+  padding: 0 12px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xs);
   font-family: var(--font-sans), sans-serif;
-  font-size: 0.8125rem;
+  font-size: 1rem;
   font-weight: 300;
   background-color: var(--color-bg-primary);
   transition: border-color var(--transition-fast);
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .input {
+    font-size: 0.8125rem;
+  }
 }
 
 :global([data-theme="dark"]) .input {
@@ -162,11 +311,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-sm);
-  min-width: 48px;
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  height: 44px;
+  padding: 0;
   border-radius: var(--radius-xs);
   border: 1px solid var(--color-border);
   cursor: pointer;
+  box-sizing: border-box;
   transition: background-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
               color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
               border-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
@@ -174,6 +328,9 @@
 }
 
 .submitBtn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
   transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -185,6 +342,26 @@
 
 .submitBtn:hover svg {
   transform: translateX(3px);
+}
+
+@media (max-width: 374px) {
+  .form {
+    gap: 6px;
+  }
+
+  .submitBtn {
+    flex-basis: 40px;
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    height: 40px;
+  }
+
+  .input {
+    min-height: 40px;
+    height: 40px;
+    padding: 0 10px;
+  }
 }
 
 .successMsg {
@@ -210,6 +387,9 @@
 .bottom {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: var(--space-md);
   padding-top: var(--space-xl);
   border-top: 1px solid var(--color-border);
@@ -222,14 +402,18 @@
 @media (min-width: 768px) {
   .bottom {
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
   }
 }
 
 .legal {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: var(--space-xs);
 }
 

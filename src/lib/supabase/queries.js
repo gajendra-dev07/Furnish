@@ -33,14 +33,14 @@ export function transformProduct(p) {
 }
 
 // ─── Transforms a raw Supabase category row ───────────────────
-export function transformCategory(c) {
+export function transformCategory(c, productCount = 0) {
   return {
     id: c.id,
     slug: c.slug,
     name: c.name,
     description: c.description || "",
     image: c.image_url || null,
-    count: c.count ?? 0,
+    count: productCount,
   };
 }
 
@@ -69,6 +69,20 @@ export async function fetchProductBySlug(client, slug) {
   return transformProduct(data);
 }
 
+// ─── Fetch several products by slug ──────────────────────────
+export async function fetchProductsBySlugs(client, slugs) {
+  if (!Array.isArray(slugs) || slugs.length === 0) return [];
+
+  const { data, error } = await client
+    .from("products")
+    .select(PRODUCT_SELECT)
+    .in("slug", slugs)
+    .eq("is_active", true);
+
+  if (error) throw error;
+  return (data || []).map(transformProduct);
+}
+
 // ─── Fetch products for a specific category slug ──────────────
 export async function fetchProductsByCategory(client, categorySlug) {
   // First resolve the category UUID
@@ -93,13 +107,23 @@ export async function fetchProductsByCategory(client, categorySlug) {
 
 // ─── Fetch all categories ─────────────────────────────────────
 export async function fetchAllCategories(client) {
-  const { data, error } = await client
-    .from("categories")
-    .select("*")
-    .order("name");
+  // `categories` has no count column, so tally the live products per category.
+  const [categories, products] = await Promise.all([
+    client.from("categories").select("*").order("name"),
+    client.from("products").select("category_id").eq("is_active", true),
+  ]);
 
-  if (error) throw error;
-  return (data || []).map(transformCategory);
+  if (categories.error) throw categories.error;
+  if (products.error) throw products.error;
+
+  const counts = new Map();
+  for (const { category_id } of products.data || []) {
+    counts.set(category_id, (counts.get(category_id) || 0) + 1);
+  }
+
+  return (categories.data || []).map((c) =>
+    transformCategory(c, counts.get(c.id) || 0)
+  );
 }
 
 // ─── Fetch a single category by slug ─────────────────────────

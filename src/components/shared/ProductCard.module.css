@@ -24,66 +24,52 @@
 }
 
 .imageLink {
-  display: flex;
-  flex-direction: column;
+  display: block;
   width: 100%;
-  flex-grow: 1;
-  min-height: 0;
+  flex: 0 0 auto;
+  align-self: stretch;
 }
 
+/* Locked landscape frame — identical size on every card */
 .imageContainer {
   position: relative;
   width: 100%;
-  aspect-ratio: 1/1;
-  /* Uniform 1:1 square ratio across all devices */
-  background-color: #ffffff;
+  aspect-ratio: 4 / 3;
+  height: auto;
+  flex-shrink: 0;
+  background-color: #f3f1ed;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-@media (min-width: 1024px) {
-  .imageContainer {
-    aspect-ratio: 1/1;
-  }
+/* Photo fills the whole frame — no inner white gaps */
+.imageStage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
 }
 
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 12px;
-  /* Ultra-slow luxurious zoom transition */
+.imageStage .image {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
   transition: transform 2.8s cubic-bezier(0.25, 1, 0.5, 1),
     opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .secondaryImage {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(1.08);
-  /* starts slightly zoomed in for cross-fade */
+  display: none !important;
 }
 
-/* Alternate Image Reveal CSS triggers */
-.card.hasSecondImage:hover .image:not(.secondaryImage) {
-  opacity: 0;
-  transform: scale(1.06);
-}
-
-.card:not(.hasSecondImage):hover .image:not(.secondaryImage) {
+.card:hover .imageStage .image {
   transform: scale(1.04);
-}
-
-.card:hover .secondaryImage {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1.04);
-  /* smooth slow zoom of secondary detail image */
 }
 
 /* Luxury Editorial Badges */
@@ -154,15 +140,15 @@
   color: var(--color-error) !important;
 }
 
-/* Showroom Floating Quick Add Button */
+/* Showroom Floating Quick Add — same hover on every card */
 .quickAdd {
   position: absolute;
-  bottom: 24px;
+  bottom: 16px;
   left: 50%;
-  transform: translate(-50%, 12px);
-  width: calc(100% - 48px);
+  transform: translate(-50%, 10px);
+  width: calc(100% - 32px);
   max-width: 200px;
-  background-color: rgba(255, 255, 255, 0.94);
+  background-color: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: #121212;
@@ -173,7 +159,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  padding: 13px 0;
+  padding: 12px 0;
   opacity: 0;
   pointer-events: none;
   box-shadow: 0 8px 24px rgba(18, 18, 18, 0.08);
@@ -191,7 +177,8 @@
   border-color: #2b2b2b;
 }
 
-.card:hover .quickAdd {
+.card:hover .quickAdd,
+.card:focus-within .quickAdd {
   opacity: 1;
   transform: translate(-50%, 0);
   pointer-events: auto;
@@ -211,20 +198,22 @@
 
 /* Details Panel */
 .details {
-  padding: var(--space-sm) 4px;
-  /* clean breathing frame */
+  padding: var(--space-sm) 4px 2px;
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .metaRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
   border-bottom: none;
-  /* Removed retail dividing line */
   margin-bottom: 2px;
+  min-width: 0;
 }
 
 .category {
@@ -234,6 +223,10 @@
   letter-spacing: 0.2em;
   color: var(--color-secondary);
   opacity: 0.75;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .materialTag {
@@ -242,6 +235,11 @@
   font-style: italic;
   color: var(--color-accent);
   opacity: 0.95;
+  flex-shrink: 0;
+  max-width: 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nameLink {
@@ -251,17 +249,19 @@
 
 .name {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 1.25rem;
-  /* Monumental typography presence */
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   font-weight: 300;
-  line-height: 1.4;
+  line-height: 1.35;
   letter-spacing: -0.015em;
   color: var(--color-primary);
   transition: color 0.4s ease;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
   margin: 0;
+  min-height: calc(1.35em * 2);
+  word-break: break-word;
 }
 
 .nameLink:hover .name {
@@ -277,11 +277,15 @@
   font-family: var(--font-sans), sans-serif;
   font-size: 0.72rem;
   line-height: 1.4;
+  min-height: calc(1.4em * 2 + 3px);
 }
 
 .cardSpecItem {
   color: var(--color-secondary);
   opacity: 0.85;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cardSpecLabel {
@@ -333,6 +337,39 @@
 .featuredCard .imageContainer {
   height: 100%;
   aspect-ratio: auto;
+}
+
+.featuredCard .imageStage {
+  inset: 0;
+}
+
+.featuredCard .imageStage .image {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+}
+
+.featuredCard .secondaryImage {
+  display: block !important;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.08);
+}
+
+.featuredCard.hasSecondImage:hover .imageStage .image:not(.secondaryImage) {
+  opacity: 0;
+  transform: scale(1.06);
+}
+
+.featuredCard:hover .secondaryImage {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1.04);
 }
 
 .featuredCard .gradientOverlay {
@@ -489,4 +526,20 @@
 
 .card:hover .placeholderText {
   color: #eae5dd;
+}
+
+@media (hover: none) {
+  .quickAdd {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+    bottom: 12px;
+    padding: 11px 0;
+  }
+
+  .featuredCard .quickAdd {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 50%);
+  }
 }
