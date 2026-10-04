@@ -1,12 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import styles from "./account.module.css";
+import styles from "@/app/account/account.module.css";
 
 export default async function AccountOverviewPage() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user) return null;
 
   const [{ data: profile }, { count: orderCount }, { count: addressCount }] =
     await Promise.all([

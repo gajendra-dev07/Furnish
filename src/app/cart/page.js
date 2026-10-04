@@ -28,13 +28,13 @@ export default function CartPage() {
             LOADING SHOPPING BAG...
           </div>
         </main>
-        <Footer />
+        <Footer flush={true} />
       </>
     );
   }
 
-  const tax = cartSubtotal * 0.12;
-  const grandTotal = cartSubtotal + tax;
+  const grandTotal = cartSubtotal;
+
 
   return (
     <>
@@ -53,7 +53,7 @@ export default function CartPage() {
               {cart.map((item, index) => (
                 <div key={`${item.product.id}-${item.selectedColor}-${index}`} className={styles.cartItem}>
                   {/* Image */}
-                  <div className={styles.itemImageContainer}>
+                  <Link href={`/products/${item.product.id}`} className={styles.itemImageContainer}>
                     {item.product.images && item.product.images.length > 0 && item.product.images[0] ? (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img
@@ -62,90 +62,76 @@ export default function CartPage() {
                         className={styles.itemImg}
                       />
                     ) : (
-                      <div style={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        background: "linear-gradient(135deg, #1f1814 0%, #0e0b09 100%)",
-                        color: "#d4af37",
-                        fontFamily: "var(--font-sans), sans-serif",
-                        fontSize: "0.8rem",
-                        fontWeight: "bold",
-                        letterSpacing: "0.05em",
-                        border: "1px solid rgba(212, 175, 55, 0.1)",
-                        borderRadius: "var(--radius-xs)",
-                        aspectRatio: "1"
-                      }}>
+                      <div className={styles.itemImgFallback}>
                         {item.product.name ? item.product.name.charAt(0) : "W"}
                       </div>
                     )}
-                  </div>
+                  </Link>
 
-                  {/* Info */}
+                  {/* Info & Controls */}
                   <div className={styles.itemInfo}>
-                    <h3 className={styles.itemName}>{item.product.name}</h3>
-                    <span className={styles.itemMeta}>Collection: {item.product.categoryName}</span>
-                    <span className={styles.itemMeta}>Selected Finish: {item.selectedColor}</span>
-                    <span className={styles.itemPrice}>
-                      ₹{item.product.price.toLocaleString()} each
-                    </span>
+                    <div className={styles.itemHeader}>
+                      <div className={styles.itemTitleGroup}>
+                        <Link href={`/products/${item.product.id}`} className={styles.itemNameLink}>
+                          <h3 className={styles.itemName}>{item.product.name}</h3>
+                        </Link>
+                        {item.product.categoryName && (
+                          <span className={styles.itemCategory}>{item.product.categoryName}</span>
+                        )}
+                        {item.selectedColor && (
+                          <span className={styles.itemMeta}>
+                            Selected Finish: <strong>{item.selectedColor}</strong>
+                          </span>
+                        )}
+                        <span className={styles.itemUnitPrice}>
+                          ₹{item.product.price.toLocaleString()} each
+                        </span>
+                      </div>
 
-                    {/* Actions Row */}
-                    <div className={styles.actionsRow}>
-                      {/* Qty Selector */}
-                      <div 
-                        style={{ 
-                          display: "flex", 
-                          alignItems: "center", 
-                          border: "1px solid var(--color-border)", 
-                          borderRadius: "var(--radius-xs)",
-                          height: "32px",
-                          backgroundColor: "var(--color-bg-primary)"
-                        }}
+                      <button
+                        type="button"
+                        onClick={() => removeFromCart(item.product.id, item.selectedColor)}
+                        className={styles.removeBtn}
+                        aria-label={`Remove ${item.product.name} from cart`}
+                        title="Remove item"
                       >
+                        <span className={styles.removeIcon} aria-hidden="true">✕</span>
+                        <span className={styles.removeText}>Remove</span>
+                      </button>
+                    </div>
+
+                    {/* Bottom Row: Stepper + Total Price */}
+                    <div className={styles.itemFooter}>
+                      <div className={styles.qtyStepper}>
                         <button
-                          style={{ width: "30px", height: "100%", color: "var(--color-secondary)" }}
+                          type="button"
+                          className={styles.qtyBtn}
                           onClick={() => updateCartQuantity(item.product.id, item.selectedColor, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                          aria-label="Decrease quantity"
                         >
                           —
                         </button>
-                        <span style={{ width: "30px", textAlign: "center", fontSize: "0.8125rem", fontFamily: "var(--font-sans)" }}>
+                        <span className={styles.qtyValue}>
                           {item.quantity}
                         </span>
                         <button
-                          style={{ width: "30px", height: "100%", color: "var(--color-secondary)" }}
+                          type="button"
+                          className={styles.qtyBtn}
                           onClick={() => updateCartQuantity(item.product.id, item.selectedColor, item.quantity + 1)}
+                          aria-label="Increase quantity"
                         >
                           +
                         </button>
                       </div>
 
-                      <button
-                        onClick={() => removeFromCart(item.product.id, item.selectedColor)}
-                        className={styles.removeBtn}
-                      >
-                        Remove
-                      </button>
+                      <div className={styles.itemSubtotalBlock}>
+                        <span className={styles.itemSubtotalLabel}>Total</span>
+                        <span className={styles.itemSubtotalPrice}>
+                          ₹{(item.product.price * item.quantity).toLocaleString()}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Subtotal right-align */}
-                  <div style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                    justifyContent: "space-between",
-                    minWidth: "80px"
-                  }}>
-                    <span style={{
-                      fontFamily: "var(--font-sans), sans-serif",
-                      fontWeight: 600,
-                      fontSize: "1rem"
-                    }}>
-                      ₹{(item.product.price * item.quantity).toLocaleString()}
-                    </span>
                   </div>
                 </div>
               ))}
@@ -165,15 +151,15 @@ export default function CartPage() {
                 <span style={{ color: "var(--color-accent)", fontWeight: 500 }}>Free</span>
               </div>
 
-              <div className={styles.summaryRow}>
-                <span>Estimated GST (12%)</span>
-                <span>₹{tax.toLocaleString()}</span>
-              </div>
-
               <div className={styles.totalRow}>
-                <span>Total Amount</span>
+                <span>Estimated total</span>
                 <span>₹{grandTotal.toLocaleString()}</span>
               </div>
+
+              <p style={{ fontSize: "0.8rem", color: "var(--color-secondary)", marginTop: "6px", marginBottom: "16px", lineHeight: "1.4" }}>
+                Tax included. Shipping and discounts calculated at checkout.
+              </p>
+
 
               <Link href="/checkout">
                 <Button variant="primary" className={styles.checkoutBtn}>
@@ -198,7 +184,7 @@ export default function CartPage() {
           </div>
         )}
       </MotionSection>
-      <Footer />
+      <Footer flush={true} />
     </>
   );
 }

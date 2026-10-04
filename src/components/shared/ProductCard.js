@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/store/CartContext";
 import styles from "./ProductCard.module.css";
 
@@ -20,6 +21,10 @@ export default function ProductCard({ product, variant = "default" }) {
   const { addToCart, toggleWishlist, isInWishlist } = useCart();
   const inWishlist = isInWishlist(product.id);
 
+  const router = useRouter();
+  const [addState, setAddState] = useState("idle"); // idle | adding | added | error
+  const [buyState, setBuyState] = useState("idle"); // idle | processing | error
+
   const handleWishlistToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -29,7 +34,36 @@ export default function ProductCard({ product, variant = "default" }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product, 1, product.colors?.[0]);
+    if (addState !== "idle" || buyState !== "idle") return;
+
+    try {
+      setAddState("adding");
+      addToCart(product, 1, product.colors?.[0]);
+      setAddState("added");
+      setTimeout(() => {
+        setAddState("idle");
+      }, 1500);
+    } catch (err) {
+      console.error("Add to cart error:", err);
+      setAddState("error");
+      setTimeout(() => setAddState("idle"), 2000);
+    }
+  };
+
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (addState !== "idle" || buyState !== "idle") return;
+
+    try {
+      setBuyState("processing");
+      addToCart(product, 1, product.colors?.[0]);
+      router.push("/checkout");
+    } catch (err) {
+      console.error("Buy now error:", err);
+      setBuyState("error");
+      setTimeout(() => setBuyState("idle"), 2000);
+    }
   };
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
@@ -104,10 +138,39 @@ export default function ProductCard({ product, variant = "default" }) {
 
           {isFeatured && <div className={styles.gradientOverlay} />}
 
-          {/* Showroom Add Action */}
-          <button onClick={handleAddToCart} className={styles.quickAdd} suppressHydrationWarning>
-            Discover &amp; Add
-          </button>
+          {/* Showroom Purchase Actions — Add to Cart and Buy Now at bottom */}
+          <div className={styles.cardActions}>
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className={`${styles.actionBtn} ${styles.addToCartBtn} ${addState === "added" ? styles.addedSuccess : ""}`}
+              disabled={addState === "adding" || buyState === "processing"}
+              aria-label="Add to cart"
+              suppressHydrationWarning
+            >
+              {addState === "adding"
+                ? "Adding…"
+                : addState === "added"
+                ? "Added ✓"
+                : addState === "error"
+                ? "Error"
+                : "Add to Cart"}
+            </button>
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              className={`${styles.actionBtn} ${styles.buyNowBtn}`}
+              disabled={addState === "adding" || buyState === "processing"}
+              aria-label="Buy now"
+              suppressHydrationWarning
+            >
+              {buyState === "processing"
+                ? "Processing…"
+                : buyState === "error"
+                ? "Error"
+                : "Buy Now"}
+            </button>
+          </div>
         </div>
       </Link>
 

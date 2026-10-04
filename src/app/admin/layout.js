@@ -4,7 +4,7 @@ import AdminSidebar from "./AdminSidebar";
 import styles from "./admin.module.css";
 
 export const metadata = {
-  title: "Admin Panel | Furnish",
+  title: "Admin Panel | Furnis",
 };
 
 export default async function AdminLayout({ children }) {
@@ -14,7 +14,7 @@ export default async function AdminLayout({ children }) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth/login?next=/admin");
+    redirect("/account/login?next=/admin");
   }
 
   const { data: profile } = await supabase

@@ -1,7 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import styles from "../admin.module.css";
 
-export const metadata = { title: "Customers | Admin – Furnish" };
+export const metadata = { title: "Customers | Admin – Furnis" };
 
 export default async function AdminCustomersPage() {
   const admin = createAdminClient();

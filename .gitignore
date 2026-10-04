@@ -52,3 +52,7 @@ next-env.d.ts
 # cloudflare local dev secrets
 .dev.vars
 .dev.vars.*
+
+# local config shares
+config-share*
+

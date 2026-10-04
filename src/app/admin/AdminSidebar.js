@@ -65,15 +65,15 @@ export default function AdminSidebar() {
 
   async function handleSignOut() {
     await signOut();
-    router.replace("/auth/login");
+    router.replace("/account/login");
     router.refresh();
   }
 
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarBrand}>
-        <Link href="/" className={styles.sidebarLogo} aria-label="Furnish home">
-          Furnish
+        <Link href="/" className={styles.sidebarLogo} aria-label="Furnis home">
+          Furnis
         </Link>
         <div className={styles.sidebarSub}>Admin Panel</div>
       </div>

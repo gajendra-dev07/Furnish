@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "../admin.module.css";
 import ProductsTable from "./ProductsTable";
 
-export const metadata = { title: "Products | Admin – Furnish" };
+export const metadata = { title: "Products | Admin – Furnis" };
 
 export default async function AdminProductsPage() {
   const supabase = await createClient();

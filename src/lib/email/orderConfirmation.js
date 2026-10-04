@@ -84,10 +84,14 @@ export async function sendOrderConfirmationEmail(orderId) {
         <td style="padding:4px 0;color:#8a8078">Subtotal</td>
         <td style="padding:4px 0;text-align:right">${inr(order.subtotal)}</td>
       </tr>
-      <tr>
+      ${order.gst_amount > 0 ? `<tr>
         <td style="padding:4px 0;color:#8a8078">GST</td>
         <td style="padding:4px 0;text-align:right">${inr(order.gst_amount)}</td>
-      </tr>
+      </tr>` : `<tr>
+        <td style="padding:4px 0;color:#8a8078">Taxes</td>
+        <td style="padding:4px 0;text-align:right">Included</td>
+      </tr>`}
+
       <tr>
         <td style="padding:10px 0;font-weight:600;border-top:1px solid #eee7e0">Total paid</td>
         <td style="padding:10px 0;text-align:right;font-weight:600;border-top:1px solid #eee7e0">${inr(order.total)}</td>
@@ -112,7 +116,7 @@ export async function sendOrderConfirmationEmail(orderId) {
   const { error: sendErr } = await resend.emails.send({
     from,
     to,
-    subject: `Your Furnish order ${orderNumber}`,
+    subject: `Your Furnis order ${orderNumber}`,
     html,
   });
 

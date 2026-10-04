@@ -1,8 +1,8 @@
 .footer {
   background-color: var(--color-bg-secondary);
   border-top: 1px solid var(--color-border);
-  padding: var(--section-space-y) 0 var(--space-xl) 0;
-  margin-top: clamp(3rem, 8vw, 9.5rem);
+  padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(1.5rem, 3vw, 2.25rem) 0;
+  margin-top: clamp(2.5rem, 6vw, 5rem);
   width: 100%;
   overflow-x: clip;
 }
@@ -20,7 +20,7 @@
 .inner {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3xl);
+  gap: clamp(1.75rem, 3.5vw, 2.75rem);
   min-width: 0;
 }
 
@@ -391,7 +391,7 @@
   justify-content: center;
   text-align: center;
   gap: var(--space-md);
-  padding-top: var(--space-xl);
+  padding-top: clamp(1.25rem, 2.5vw, 1.75rem);
   border-top: 1px solid var(--color-border);
   font-family: var(--font-sans), sans-serif;
   font-size: 0.75rem;

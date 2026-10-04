@@ -1,5 +1,5 @@
-/** Matches the GST rate shown on the checkout UI. */
-export const GST_RATE = 0.12;
+/** Tax is already included in product prices (MRP / all-inclusive pricing). */
+export const GST_RATE = 0;
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -11,6 +11,7 @@ export function isUuid(value) {
 function roundMoney(n) {
   return Math.round(Number(n) * 100) / 100;
 }
+
 
 /**
  * Resolve cart line items against live product rows in Supabase.

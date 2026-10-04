@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchAllCategories } from "@/lib/supabase/queries";
 
 export const metadata = {
-  title: "Collections | Furnish",
+  title: "Collections | Furnis",
   description:
     "Browse our handcrafted wooden kitchenware collections — chopping boards, serving platters, utensils and more.",
 };

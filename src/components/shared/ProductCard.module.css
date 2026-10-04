@@ -140,61 +140,130 @@
   color: var(--color-error) !important;
 }
 
-/* Showroom Floating Quick Add — same hover on every card */
-.quickAdd {
+/* Showroom Floating Actions (Add to Cart + Buy Now) */
+.cardActions {
   position: absolute;
   bottom: 16px;
   left: 50%;
   transform: translate(-50%, 10px);
-  width: calc(100% - 32px);
-  max-width: 200px;
-  background-color: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #121212;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-sans), sans-serif;
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  padding: 12px 0;
+  width: calc(100% - 24px);
+  max-width: 250px;
+  display: flex;
+  gap: 8px;
   opacity: 0;
   pointer-events: none;
   box-shadow: 0 8px 24px rgba(18, 18, 18, 0.08);
   transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1),
-    transform 0.6s cubic-bezier(0.25, 1, 0.5, 1),
-    background-color 0.4s ease,
-    color 0.4s ease,
-    border-color 0.4s ease;
+    transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 4;
 }
 
-:global([data-theme="dark"]) .quickAdd {
-  background-color: rgba(18, 18, 18, 0.94);
-  color: #FAF7F2;
-  border-color: #2b2b2b;
-}
-
-.card:hover .quickAdd,
-.card:focus-within .quickAdd {
+.card:hover .cardActions,
+.card:focus-within .cardActions {
   opacity: 1;
   transform: translate(-50%, 0);
   pointer-events: auto;
 }
 
-.quickAdd:hover {
+.actionBtn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 11px 4px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+  transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+    background-color 0.28s ease,
+    color 0.28s ease,
+    border-color 0.28s ease;
+}
+
+.actionBtn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.actionBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* 1. Add to Cart — Light Frosted Glass (Inverts to Black on Hover) */
+.addToCartBtn {
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #121212;
+  border: 1px solid rgba(18, 18, 18, 0.2);
+}
+
+.addToCartBtn:hover:not(:disabled) {
   background-color: #121212;
   color: #FFFFFF;
   border-color: #121212;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(18, 18, 18, 0.2);
 }
 
-:global([data-theme="dark"]) .quickAdd:hover {
+.addedSuccess {
+  background-color: #1b4332 !important;
+  color: #FFFFFF !important;
+  border-color: #1b4332 !important;
+  box-shadow: 0 4px 12px rgba(27, 67, 50, 0.3) !important;
+}
+
+:global([data-theme="dark"]) .addToCartBtn {
+  background-color: rgba(28, 28, 28, 0.94);
+  color: #FAF7F2;
+  border-color: #444444;
+}
+
+:global([data-theme="dark"]) .addToCartBtn:hover:not(:disabled) {
+  background-color: #FAF7F2;
+  color: #121212;
+  border-color: #FAF7F2;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* 2. Buy Now — Solid Black (Inverts to White on Hover) */
+.buyNowBtn {
+  background-color: #121212;
+  color: #FFFFFF;
+  border: 1px solid #121212;
+}
+
+.buyNowBtn:hover:not(:disabled) {
+  background-color: #FFFFFF;
+  color: #121212;
+  border-color: #121212;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(18, 18, 18, 0.16);
+}
+
+:global([data-theme="dark"]) .buyNowBtn {
   background-color: #FAF7F2;
   color: #121212;
   border-color: #FAF7F2;
 }
+
+:global([data-theme="dark"]) .buyNowBtn:hover:not(:disabled) {
+  background-color: #121212;
+  color: #FAF7F2;
+  border-color: #FAF7F2;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
 
 /* Details Panel */
 .details {
@@ -377,15 +446,27 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 60%;
-  background: linear-gradient(to top, rgba(18, 18, 18, 0.75) 0%, rgba(18, 18, 18, 0.2) 65%, transparent 100%);
+  height: 72%;
+  background: linear-gradient(
+    to top,
+    rgba(14, 12, 10, 0.92) 0%,
+    rgba(14, 12, 10, 0.72) 40%,
+    rgba(14, 12, 10, 0.25) 75%,
+    transparent 100%
+  );
   pointer-events: none;
   z-index: 2;
   transition: opacity 0.8s ease;
 }
 
 :global([data-theme="dark"]) .featuredCard .gradientOverlay {
-  background: linear-gradient(to top, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.3) 65%, transparent 100%);
+  background: linear-gradient(
+    to top,
+    rgba(10, 10, 10, 0.95) 0%,
+    rgba(10, 10, 10, 0.78) 40%,
+    rgba(10, 10, 10, 0.3) 75%,
+    transparent 100%
+  );
 }
 
 .featuredCard .details {
@@ -393,7 +474,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: var(--space-md) var(--space-lg) var(--space-lg) var(--space-lg);
+  padding: var(--space-md) var(--space-lg) 64px var(--space-lg);
   z-index: 3;
   pointer-events: auto;
   display: flex;
@@ -419,6 +500,14 @@
   letter-spacing: -0.02em;
 }
 
+.featuredCard .cardSpecLabel {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.featuredCard .cardSpecValue {
+  color: rgba(255, 255, 255, 0.72);
+}
+
 .featuredCard .price {
   color: #EAE5DD;
   font-size: 0.9rem;
@@ -433,47 +522,80 @@
   color: var(--color-accent);
 }
 
-.featuredCard .quickAdd {
-  bottom: 50%;
+/* Legacy quickAdd safeguard: hide if ever rendered by stale cache */
+.quickAdd {
+  display: none !important;
+}
+
+.featuredCard .cardActions {
+  bottom: 14px;
   left: 50%;
-  transform: translate(-50%, calc(50% + 15px));
-  max-width: 210px;
+  transform: translate(-50%, 0);
+  width: calc(100% - 24px);
+  max-width: 300px;
+  display: flex;
+  gap: 8px;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  z-index: 10;
+}
+
+.featuredCard .addToCartBtn {
   background-color: #FFFFFF;
   color: #121212;
-  border: 1px solid #FFFFFF;
+  border-color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
-.featuredCard:hover .quickAdd {
-  opacity: 1;
-  transform: translate(-50%, 50%);
-  pointer-events: auto;
-}
-
-.featuredCard .quickAdd:hover {
-  background-color: #121212;
+.featuredCard .buyNowBtn {
+  background-color: #181818;
   color: #FFFFFF;
-  border-color: #121212;
-}
-
-:global([data-theme="dark"]) .featuredCard .quickAdd {
-  background-color: transparent;
-  color: #FFFFFF;
-  border-color: rgba(255, 255, 255, 0.35);
-}
-
-:global([data-theme="dark"]) .featuredCard .quickAdd:hover {
-  background-color: #FAF7F2;
-  color: #121212;
-  border-color: #FAF7F2;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 @media (max-width: 767px) {
+  .cardActions {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+    bottom: 10px;
+    width: calc(100% - 16px);
+    gap: 6px;
+  }
+
+  .featuredCard {
+    min-height: 440px;
+  }
+
   .featuredCard .name {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+    line-height: 1.3;
   }
 
   .featuredCard .details {
-    padding: var(--space-sm) var(--space-md) var(--space-md) var(--space-md);
+    padding: var(--space-sm) var(--space-md) 60px var(--space-md);
+  }
+
+  .featuredCard .cardSpecs {
+    margin-top: 2px;
+    margin-bottom: 4px;
+    font-size: 0.68rem;
+    gap: 2px;
+    min-height: auto;
+  }
+
+  .featuredCard .cardActions {
+    bottom: 14px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: calc(100% - 24px);
+    max-width: 300px;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    gap: 8px;
   }
 }
 
@@ -529,17 +651,67 @@
 }
 
 @media (hover: none) {
-  .quickAdd {
+  .cardActions {
     opacity: 1;
     pointer-events: auto;
     transform: translate(-50%, 0);
     bottom: 12px;
-    padding: 11px 0;
+    width: calc(100% - 16px);
+    gap: 6px;
   }
 
-  .featuredCard .quickAdd {
+  .featuredCard .cardActions {
     opacity: 1;
     pointer-events: auto;
-    transform: translate(-50%, 50%);
+    transform: translate(-50%, 0);
+    bottom: 14px;
   }
 }
+
+@media (max-width: 480px) {
+  .cardActions {
+    gap: 4px;
+    width: calc(100% - 12px);
+    bottom: 8px;
+  }
+
+  .featuredCard .details {
+    padding: var(--space-xs) 12px 54px 12px;
+  }
+
+  .featuredCard .cardActions {
+    bottom: 10px;
+    width: calc(100% - 18px);
+    gap: 6px;
+  }
+
+  .actionBtn {
+    font-size: 0.5625rem;
+    letter-spacing: 0.08em;
+    padding: 9px 2px;
+  }
+}
+
+@media (max-width: 374px) {
+  .cardActions {
+    gap: 4px;
+    width: calc(100% - 10px);
+    bottom: 8px;
+  }
+
+  .featuredCard .cardActions {
+    bottom: 8px;
+    width: calc(100% - 14px);
+    gap: 4px;
+  }
+
+  .featuredCard .details {
+    padding: var(--space-xs) 8px 50px 8px;
+  }
+
+  .actionBtn {
+    font-size: 0.53rem;
+    letter-spacing: 0.05em;
+    padding: 8px 2px;
+  }
+}

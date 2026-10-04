@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "../../../admin.module.css";
 import ProductForm from "../../ProductForm";
 
-export const metadata = { title: "Edit Product | Admin – Furnish" };
+export const metadata = { title: "Edit Product | Admin – Furnis" };
 
 export default async function EditProductPage({ params }) {
   const { id } = await params;

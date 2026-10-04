@@ -58,8 +58,11 @@ export function AuthProvider({ children }) {
     setProfile(null);
   }
 
+  /** Returns true if the current user is an admin */
+  const isAdmin = profile?.role === "admin";
+
   return (
-    <AuthContext.Provider value={{ user, profile, isAuthLoading, signOut }}>
+    <AuthContext.Provider value={{ user, profile, isAuthLoading, signOut, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

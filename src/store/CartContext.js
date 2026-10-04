@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { fetchProductsBySlugs } from "@/lib/supabase/queries";
 
@@ -14,6 +15,16 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [cartNotification, setCartNotification] = useState(null);
+
+  // Auto-dismiss popup notification after 3.2 seconds
+  useEffect(() => {
+    if (!cartNotification) return;
+    const timer = setTimeout(() => {
+      setCartNotification(null);
+    }, 3200);
+    return () => clearTimeout(timer);
+  }, [cartNotification]);
 
   // The cart caches whole product objects, price included, in localStorage.
   // Re-read the live rows on load so a returning customer isn't shown a price
@@ -111,6 +122,13 @@ export const CartProvider = ({ children }) => {
 
       return [...prevCart, { product, quantity, selectedColor }];
     });
+
+    // Trigger elegant popup notification
+    setCartNotification({
+      product,
+      quantity: quantity || 1,
+      key: Date.now(),
+    });
   };
 
   const removeFromCart = (productId, color) => {
@@ -174,9 +192,46 @@ export const CartProvider = ({ children }) => {
       }}
     >
       {children}
+      {cartNotification && (
+        <aside className="cartToast" role="status" aria-live="polite">
+          {cartNotification.product?.images?.[0] && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={cartNotification.product.images[0]}
+              alt={cartNotification.product.name || "Product"}
+              className="cartToastImg"
+            />
+          )}
+          <div className="cartToastBody">
+            <div className="cartToastHeader">
+              <span className="cartToastCheck">✓</span>
+              Added to cart
+            </div>
+            <div className="cartToastTitle">
+              {cartNotification.product?.name}
+            </div>
+          </div>
+          <Link
+            href="/cart"
+            className="cartToastBtn"
+            onClick={() => setCartNotification(null)}
+          >
+            View Cart
+          </Link>
+          <button
+            type="button"
+            className="cartToastClose"
+            onClick={() => setCartNotification(null)}
+            aria-label="Close notification"
+          >
+            ✕
+          </button>
+        </aside>
+      )}
     </CartContext.Provider>
   );
 };
+
 
 export const useCart = () => {
   const context = useContext(CartContext);

@@ -221,6 +221,11 @@
   transform: translateY(-1px);
 }
 
+.activeIconBtn {
+  color: var(--color-accent);
+  background-color: var(--color-accent-light);
+}
+
 .badge {
   position: absolute;
   top: 6px;

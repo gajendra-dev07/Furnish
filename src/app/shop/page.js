@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchAllProducts, fetchAllCategories } from "@/lib/supabase/queries";
 
 export const metadata = {
-  title: "Shop | Furnish",
+  title: "Shop | Furnis",
   description:
     "Browse handcrafted Acacia and Mango wood kitchenware — chopping boards, serving platters and prep tools.",
 };

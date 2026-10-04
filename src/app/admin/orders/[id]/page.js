@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import OrderStatusControl from "./OrderStatusControl";
 import styles from "../../admin.module.css";
 
-export const metadata = { title: "Order | Admin – Furnish" };
+export const metadata = { title: "Order | Admin – Furnis" };
 
 const BADGE = {
   delivered: styles.badgeGreen,
@@ -132,10 +132,11 @@ export default async function AdminOrderDetailPage({ params }) {
                 }}
               >
                 <div>Subtotal &nbsp; {inr(order.subtotal)}</div>
-                <div>GST &nbsp; {inr(order.gst_amount)}</div>
+                {Number(order.gst_amount) > 0 && <div>GST &nbsp; {inr(order.gst_amount)}</div>}
                 <div style={{ fontWeight: 600 }}>
                   Total paid &nbsp; {inr(order.total)}
                 </div>
+
               </div>
             </div>
 

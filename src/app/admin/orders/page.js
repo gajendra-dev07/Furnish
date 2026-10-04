@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import styles from "../admin.module.css";
 
-export const metadata = { title: "Orders | Admin – Furnish" };
+export const metadata = { title: "Orders | Admin – Furnis" };
 
 const BADGE = {
   delivered: styles.badgeGreen,

@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import styles from "../account.module.css";
+import styles from "@/app/account/account.module.css";
 
-export const metadata = { title: "My Orders | Furnish" };
+export const metadata = { title: "My Orders | Furnis" };
 
 const STATUS_STYLE = {
   delivered: styles.badgeGreen,
@@ -17,6 +17,8 @@ export default async function OrdersPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user) return null;
 
   const { data: orders } = await supabase
     .from("orders")

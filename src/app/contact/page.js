@@ -129,14 +129,35 @@ export default function ContactPage() {
             <div className={styles.infoBlock}>
               <h3 className={styles.blockTitle}>Direct Inquiries</h3>
               <p className={styles.blockText}>
-                <strong>Support & Logistics:</strong>
+                <strong>WhatsApp Concierge:</strong>
                 <br />
-                <span className={styles.highlightText}>support@furnish-aura.com</span>
+                <a
+                  href="https://wa.me/916375549637?text=Hi%20Furnis%2C%20I%20have%20an%20inquiry%20regarding%20your%20products"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.highlightText}
+                  style={{ textDecoration: "underline", color: "var(--color-primary)" }}
+                >
+                  +91 6375549637 (Instant Chat)
+                </a>
               </p>
               <p className={styles.blockText} style={{ marginTop: "var(--space-xs)" }}>
-                <strong>Architects & Trade Partners:</strong>
+                <strong>Instagram:</strong>
                 <br />
-                <span className={styles.highlightText}>trade@furnish-aura.com</span>
+                <a
+                  href="https://www.instagram.com/furnis.in/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.highlightText}
+                  style={{ textDecoration: "underline", color: "var(--color-primary)" }}
+                >
+                  @furnis.in
+                </a>
+              </p>
+              <p className={styles.blockText} style={{ marginTop: "var(--space-xs)" }}>
+                <strong>Email:</strong>
+                <br />
+                <span className={styles.highlightText}>support@furnis.in</span>
               </p>
             </div>
           </div>

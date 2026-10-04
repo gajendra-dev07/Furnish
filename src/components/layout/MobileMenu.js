@@ -31,7 +31,7 @@ export default function MobileMenu({
 
   if (!isOpen) return null;
 
-  const accountHref = user ? "/account" : "/auth/login";
+  const accountHref = user ? "/account" : "/account/login";
   const accountLabel = user ? "My Account" : "Sign In";
 
   const extraLinks = [
@@ -52,6 +52,58 @@ export default function MobileMenu({
     }
     markGoHomeTop();
     router.push("/");
+  };
+
+  const isLinkActive = (href, label) => {
+    // 1. Home
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    // 2. Wishlist: /shop?filter=wishlist
+    if (label === "Wishlist" || href.includes("filter=wishlist")) {
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        return pathname === "/shop" && params.get("filter") === "wishlist";
+      }
+      return false;
+    }
+
+    // 3. Cart & Checkout: /cart, /checkout
+    if (href === "/cart" || label === "Cart") {
+      return pathname === "/cart" || pathname.startsWith("/cart/") || pathname.startsWith("/checkout");
+    }
+
+    // 4. Account / Auth: /account, /account/login, /auth, etc.
+    if (href.startsWith("/account") || label === "Sign In" || label === "My Account") {
+      return pathname.startsWith("/account") || pathname.startsWith("/auth");
+    }
+
+    // 5. Shop: /shop, /products, /categories (excluding wishlist)
+    if (href === "/shop" || label === "Shop") {
+      const isWishlist = typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("filter") === "wishlist"
+        : false;
+      if (isWishlist) return false;
+      return (
+        pathname === "/shop" ||
+        pathname.startsWith("/shop/") ||
+        pathname.startsWith("/products") ||
+        pathname.startsWith("/categories")
+      );
+    }
+
+    // 6. About
+    if (href === "/about" || label === "About") {
+      return pathname === "/about" || pathname.startsWith("/about/");
+    }
+
+    // 7. Contact
+    if (href === "/contact" || label === "Contact") {
+      return pathname === "/contact" || pathname.startsWith("/contact/");
+    }
+
+    return pathname === href;
   };
 
   return (
@@ -76,7 +128,7 @@ export default function MobileMenu({
 
         <nav className={styles.nav}>
           {links.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = isLinkActive(link.href, link.label);
             const isHome = link.href === "/";
             return (
               <Link
@@ -91,11 +143,13 @@ export default function MobileMenu({
             );
           })}
 
-          {extraLinks.map((link) => (
+          {extraLinks.map((link) => {
+            const isActive = isLinkActive(link.href, link.label);
+            return (
               <Link
                 key={link.href + link.label}
                 href={link.href}
-                className={styles.navLink}
+                className={`${styles.navLink} ${isActive ? styles.activeLink : ""}`}
                 onClick={onClose}
               >
                 <span>{link.label}</span>
@@ -103,13 +157,31 @@ export default function MobileMenu({
                   <span className={styles.navBadge}>{link.badge}</span>
                 )}
               </Link>
-            ))}
+            );
+          })}
         </nav>
 
         <div className={styles.footer}>
           <p className={styles.tagline}>Curating spaces for refined living.</p>
           <div className={styles.divider}></div>
-          <p className={styles.contact}>support@furnish-aura.com</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "10px" }}>
+            <a
+              href="https://wa.me/916375549637?text=Hi%20Furnis%2C%20I%20have%20an%20inquiry%20regarding%20your%20products"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "var(--color-primary)", textDecoration: "none", fontSize: "0.8125rem", display: "inline-flex", alignItems: "center", gap: "6px" }}
+            >
+              <span style={{ fontWeight: 600, color: "var(--color-accent)" }}>WhatsApp:</span> +91 6375549637
+            </a>
+            <a
+              href="https://www.instagram.com/furnis.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "var(--color-primary)", textDecoration: "none", fontSize: "0.8125rem", display: "inline-flex", alignItems: "center", gap: "6px" }}
+            >
+              <span style={{ fontWeight: 600, color: "var(--color-accent)" }}>Instagram:</span> @furnis.in
+            </a>
+          </div>
         </div>
       </div>
     </div>

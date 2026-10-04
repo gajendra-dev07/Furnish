@@ -195,7 +195,7 @@ export default function CheckoutPage() {
         key: createData.keyId,
         amount: createData.amount,
         currency: createData.currency || "INR",
-        name: "Furnish",
+        name: "Furnis",
         description: "Furniture order payment",
         order_id: createData.orderId,
         prefill: {
@@ -287,8 +287,8 @@ export default function CheckoutPage() {
     );
   }
 
-  const tax = cartSubtotal * 0.12;
-  const grandTotal = cartSubtotal + tax;
+  const grandTotal = cartSubtotal;
+
 
   // Order Confirmed Screen
   if (orderConfirmed) {
@@ -304,7 +304,7 @@ export default function CheckoutPage() {
             </div>
             <h2 className={styles.successTitle}>Order Placed Successfully</h2>
             <p className={styles.successText}>
-              Thank you for choosing Furnish. Your order has been successfully placed. We will email your invoice and dispatch details within 24 hours.
+              Thank you for choosing Furnis. Your order has been successfully placed. We will email your invoice and dispatch details within 24 hours.
             </p>
 
             <div className={styles.receiptCard}>
@@ -353,7 +353,7 @@ export default function CheckoutPage() {
               {!user && (
                 <div className={styles.errorMsg} role="alert">
                   You need to{" "}
-                  <Link href="/auth/login?next=/checkout">sign in</Link> before
+                  <Link href="/account/login?next=/checkout">sign in</Link> before
                   placing an order so we can save it to your account.
                 </div>
               )}
@@ -527,16 +527,17 @@ export default function CheckoutPage() {
                   <span>Shipping & Handling</span>
                   <span style={{ color: "var(--color-accent)", fontWeight: 500 }}>Free</span>
                 </div>
-                <div className={styles.summaryItem} style={{ fontSize: "0.875rem" }}>
-                  <span>GST (12%)</span>
-                  <span>₹{tax.toLocaleString()}</span>
-                </div>
               </div>
 
               <div className={styles.totalRow}>
                 <span>Order Total</span>
                 <span>₹{grandTotal.toLocaleString()}</span>
               </div>
+
+              <p style={{ fontSize: "0.78rem", color: "var(--color-secondary)", marginTop: "4px", marginBottom: "16px", lineHeight: "1.4" }}>
+                Tax included. Free shipping nationwide.
+              </p>
+
 
               <Button
                 type="submit"

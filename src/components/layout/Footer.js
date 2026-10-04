@@ -7,7 +7,7 @@ import { media } from "@/constants/media";
 import { markGoHomeTop, scrollPageToTop } from "@/lib/goHome";
 import styles from "./Footer.module.css";
 
-export default function Footer() {
+export default function Footer({ flush = false }) {
   const pathname = usePathname();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -57,9 +57,11 @@ export default function Footer() {
     setEmail("");
   };
 
+  const isFlush = flush || pathname === "/" || pathname === "/about" || pathname === "/cart";
+
   return (
     <footer
-      className={`${styles.footer}${pathname === "/" ? ` ${styles.footerFlush}` : ""}`}
+      className={`${styles.footer}${isFlush ? ` ${styles.footerFlush}` : ""}`}
     >
       <div className={`container ${styles.inner}`}>
         <div className={styles.grid}>
@@ -88,6 +90,26 @@ export default function Footer() {
             <p className={styles.description}>
               Discover the warmth and beauty of sustainable wooden kitchenware. Handcrafted with love and care, our exquisite Acacia and Mango wood chopping boards, platters, and organizers are perfect for elevating your culinary experience.
             </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+              <a
+                href="https://wa.me/916375549637?text=Hi%20Furnis%2C%20I%20have%20an%20inquiry%20regarding%20your%20products"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.contact}
+                style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}
+              >
+                <span>WhatsApp:</span> +91 6375549637
+              </a>
+              <a
+                href="https://www.instagram.com/furnis.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.contact}
+                style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}
+              >
+                <span>Instagram:</span> @furnis.in
+              </a>
+            </div>
           </div>
 
           {/* Directory Links */}
@@ -134,11 +156,12 @@ export default function Footer() {
 
             <div className={styles.socials} aria-label="Social media">
               <a
-                href="https://www.instagram.com/"
+                href="https://www.instagram.com/furnis.in/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.socialLink}
-                aria-label="Instagram"
+                aria-label="Instagram @furnis.in"
+                title="Follow us on Instagram @furnis.in"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <rect x="2.5" y="2.5" width="19" height="19" rx="5" />
@@ -147,22 +170,12 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="https://www.facebook.com/"
+                href="https://wa.me/916375549637?text=Hi%20Furnis%2C%20I%20have%20an%20inquiry%20regarding%20your%20products"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.socialLink}
-                aria-label="Facebook"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H7v3h3v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z" />
-                </svg>
-              </a>
-              <a
-                href="https://wa.me/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.socialLink}
-                aria-label="WhatsApp"
+                aria-label="WhatsApp +91 6375549637"
+                title="Connect on WhatsApp +91 6375549637"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M12.04 2C6.58 2 2.15 6.4 2.15 11.84c0 1.99.59 3.84 1.6 5.4L2 22l4.92-1.68a9.86 9.86 0 0 0 5.12 1.42h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2zm5.52 14.12c-.23.64-1.33 1.18-1.86 1.25-.48.07-1.09.1-1.76-.11-.41-.12-.93-.28-1.6-.55-2.82-1.22-4.65-4.06-4.79-4.25-.14-.19-1.15-1.53-1.15-2.92 0-1.39.73-2.07.99-2.36.26-.29.57-.36.76-.36h.55c.17 0 .41-.07.64.49.23.57.79 1.97.86 2.11.07.14.12.31.02.5-.1.19-.14.31-.29.48-.14.17-.31.38-.44.51-.14.14-.29.29-.12.57.17.28.74 1.22 1.59 1.98 1.09.97 2.01 1.27 2.29 1.41.29.14.45.12.62-.07.17-.19.71-.83.9-1.11.19-.29.38-.24.64-.14.26.1 1.65.78 1.93.92.29.14.48.21.55.33.07.12.07.69-.16 1.33z" />
@@ -210,12 +223,12 @@ export default function Footer() {
 
         <div className={styles.bottom}>
           <p className={styles.copyright}>
-            &copy; {new Date().getFullYear()} Furnish. All rights reserved.
+            &copy; {new Date().getFullYear()} Furnis. All rights reserved.
           </p>
           <div className={styles.legal}>
-            <Link href="#">Privacy Policy</Link>
+            <Link href="/privacy-policy">Privacy Policy</Link>
             <span className={styles.separator}>|</span>
-            <Link href="#">Terms of Service</Link>
+            <Link href="/terms-of-service">Terms of Service</Link>
           </div>
         </div>
       </div>

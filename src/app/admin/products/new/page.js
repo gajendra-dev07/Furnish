@@ -3,7 +3,7 @@ import Link from "next/link";
 import styles from "../../admin.module.css";
 import ProductForm from "../ProductForm";
 
-export const metadata = { title: "Add Product | Admin – Furnish" };
+export const metadata = { title: "Add Product | Admin – Furnis" };
 
 export default async function NewProductPage() {
   const admin = createAdminClient();

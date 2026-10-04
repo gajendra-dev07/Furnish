@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import styles from "../account.module.css";
+import styles from "@/app/account/account.module.css";
 
 export default function ProfilePage() {
   const [fullName, setFullName] = useState("");

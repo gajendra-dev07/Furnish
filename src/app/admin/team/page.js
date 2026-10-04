@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import TeamManager from "./TeamManager";
 import styles from "../admin.module.css";
 
-export const metadata = { title: "Team | Admin – Furnish" };
+export const metadata = { title: "Team | Admin – Furnis" };
 
 export default async function AdminTeamPage() {
   const supabase = await createClient();

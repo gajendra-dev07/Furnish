@@ -82,6 +82,42 @@ export default function Header() {
     { label: "Contact", href: "/contact" },
   ];
 
+  const isLinkActive = (href, label) => {
+    if (href === "/") return pathname === "/";
+    if (label === "Wishlist" || href.includes("filter=wishlist")) {
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        return pathname === "/shop" && params.get("filter") === "wishlist";
+      }
+      return false;
+    }
+    if (href === "/cart" || label === "Cart") {
+      return pathname === "/cart" || pathname.startsWith("/cart/") || pathname.startsWith("/checkout");
+    }
+    if (href.startsWith("/account") || label === "Sign In" || label === "My Account") {
+      return pathname.startsWith("/account") || pathname.startsWith("/auth");
+    }
+    if (href === "/shop" || label === "Shop") {
+      const isWishlist = typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("filter") === "wishlist"
+        : false;
+      if (isWishlist) return false;
+      return (
+        pathname === "/shop" ||
+        pathname.startsWith("/shop/") ||
+        pathname.startsWith("/products") ||
+        pathname.startsWith("/categories")
+      );
+    }
+    if (href === "/about" || label === "About") {
+      return pathname === "/about" || pathname.startsWith("/about/");
+    }
+    if (href === "/contact" || label === "Contact") {
+      return pathname === "/contact" || pathname.startsWith("/contact/");
+    }
+    return pathname === href;
+  };
+
   const headerClass = `${styles.header} ${isScrolled ? styles.scrolled : ""}`;
 
   return (
@@ -95,7 +131,7 @@ export default function Header() {
 
           <nav className={styles.desktopNav}>
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = isLinkActive(link.href, link.label);
               const isHome = link.href === "/";
               return (
                 <Link
@@ -115,7 +151,7 @@ export default function Header() {
             {/* Desktop only — these move into the hamburger menu on mobile/tablet */}
             <Link
               href="/shop?filter=wishlist"
-              className={`${styles.iconBtn} ${styles.desktopOnlyAction}`}
+              className={`${styles.iconBtn} ${styles.desktopOnlyAction} ${isLinkActive("/shop?filter=wishlist", "Wishlist") ? styles.activeIconBtn : ""}`}
               aria-label="Wishlist"
             >
               <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -143,8 +179,8 @@ export default function Header() {
             </button>
 
             <Link
-              href={user ? "/account" : "/auth/login"}
-              className={`${styles.iconBtn} ${styles.desktopOnlyAction}`}
+              href={user ? "/account" : "/account/login"}
+              className={`${styles.iconBtn} ${styles.desktopOnlyAction} ${isLinkActive(user ? "/account" : "/account/login", user ? "My Account" : "Sign In") ? styles.activeIconBtn : ""}`}
               aria-label={user ? "My account" : "Sign in"}
               suppressHydrationWarning
             >
@@ -156,7 +192,7 @@ export default function Header() {
 
             <Link
               href="/cart"
-              className={`${styles.iconBtn} ${styles.desktopOnlyAction}`}
+              className={`${styles.iconBtn} ${styles.desktopOnlyAction} ${isLinkActive("/cart", "Cart") ? styles.activeIconBtn : ""}`}
               aria-label="Cart"
             >
               <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">

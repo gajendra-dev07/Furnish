@@ -9,6 +9,7 @@ export async function GET(request) {
 
   if (code) {
     const cookieStore = await cookies();
+    const response = NextResponse.redirect(`${origin}${next}`);
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -19,9 +20,14 @@ export async function GET(request) {
             return cookieStore.getAll();
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
+            cookiesToSet.forEach(({ name, value, options }) => {
+              try {
+                cookieStore.set(name, value, options);
+              } catch {
+                // Ignore if cookieStore is readonly
+              }
+              response.cookies.set(name, value, options);
+            });
           },
         },
       }
@@ -29,11 +35,11 @@ export async function GET(request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      return response;
     }
   }
 
   return NextResponse.redirect(
-    `${origin}/auth/login?error=Email+confirmation+failed.+Please+try+again.`
+    `${origin}/account/login?error=Email+confirmation+failed.+Please+try+again.`
   );
 }

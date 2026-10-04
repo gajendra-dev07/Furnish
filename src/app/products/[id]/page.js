@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
   const product = await fetchProductBySlug(client, slug);
 
   return {
-    title: product ? `${product.name} | Furnish` : "Product Not Found | Furnish",
+    title: product ? `${product.name} | Furnis` : "Product Not Found | Furnis",
     description: product
       ? product.description
       : "Explore handcrafted wooden kitchenware.",

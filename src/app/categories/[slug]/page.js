@@ -19,8 +19,8 @@ export async function generateMetadata({ params }) {
 
   return {
     title: category
-      ? `${category.name} Collection | Furnish`
-      : "Collection Not Found | Furnish",
+      ? `${category.name} Collection | Furnis`
+      : "Collection Not Found | Furnis",
     description: category
       ? category.description
       : "Browse our handcrafted wooden kitchenware.",
