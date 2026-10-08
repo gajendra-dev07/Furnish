@@ -300,18 +300,22 @@ export default function CheckoutPage() {
         theme: {
           color: "#3d2c29",
         },
-        // QR shows on desktop by default; on mobile web Razorpay only renders
-        // it once support enables UPI QR on the account.
+        // Apps and QR are separate blocks so mobile shows app buttons for
+        // paying on the same phone instead of only a QR it cannot scan.
         config: {
           display: {
             blocks: {
-              upi: {
-                name: "Pay via UPI",
-                instruments: [{ method: "upi", flows: ["qr", "intent"] }],
+              upiApps: {
+                name: "Pay using UPI apps",
+                instruments: [{ method: "upi", flows: ["intent"] }],
+              },
+              upiQr: {
+                name: "Scan QR to pay",
+                instruments: [{ method: "upi", flows: ["qr"] }],
               },
             },
             hide: [{ method: "upi", flows: ["collect"] }],
-            sequence: ["block.upi"],
+            sequence: ["block.upiApps", "block.upiQr"],
             preferences: { show_default_blocks: true },
           },
         },
