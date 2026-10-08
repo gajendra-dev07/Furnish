@@ -10,9 +10,20 @@ import Button from "@/components/ui/Button";
 import { useCart } from "@/store/CartContext";
 import { useAuth } from "@/store/AuthContext";
 import { createClient } from "@/lib/supabase/client";
+import { indianStates } from "@/constants/indianStates";
+import {
+  isValidPincode,
+  matchState,
+  usePincodeLookup,
+} from "@/lib/address/pincode";
 import styles from "@/features/checkout/checkout.module.css";
 
 const NEW_ADDRESS = "new";
+
+function sameAddressText(a, b) {
+  const norm = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  return norm(a) === norm(b);
+}
 
 function splitName(fullName) {
   const parts = String(fullName || "").trim().split(/\s+/).filter(Boolean);
@@ -67,9 +78,27 @@ export default function CheckoutPage() {
     phone: "",
   });
 
+  const {
+    lookup: lookupPincode,
+    cities: pincodeCities,
+    status: pincodeStatus,
+  } = usePincodeLookup();
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    let { value } = e.target;
+    if (name === "zip") value = value.replace(/\D/g, "").slice(0, 6);
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "zip") {
+      lookupPincode(value, ({ city, state }) => {
+        setFormData((prev) => ({
+          ...prev,
+          city: city || prev.city,
+          state: state || prev.state,
+        }));
+      });
+    }
   };
 
   // Fill in what we already know about the signed-in customer rather than
@@ -97,7 +126,7 @@ export default function CheckoutPage() {
       ...prev,
       address: [address.line1, address.line2].filter(Boolean).join(", "),
       city: address.city || "",
-      state: address.state || "",
+      state: matchState(address.state),
       zip: address.pincode || "",
     }));
   }, []);
@@ -150,6 +179,56 @@ export default function CheckoutPage() {
     if (chosen) applyAddress(chosen);
   };
 
+  // Keep what the customer typed so the next checkout is prefilled. Failures
+  // are swallowed: a missed save must never block the payment.
+  async function rememberCustomerDetails() {
+    const supabase = createClient();
+    if (!supabase) return;
+
+    const line1 = formData.address.trim();
+    const pincode = formData.zip.trim();
+    const alreadySaved = addresses.some(
+      (a) =>
+        a.pincode === pincode &&
+        sameAddressText([a.line1, a.line2].filter(Boolean).join(", "), line1)
+    );
+
+    try {
+      if (!alreadySaved) {
+        const { data } = await supabase
+          .from("addresses")
+          .insert({
+            user_id: user.id,
+            label: "Home",
+            line1,
+            city: formData.city.trim(),
+            state: formData.state,
+            pincode,
+            is_default: addresses.length === 0,
+          })
+          .select()
+          .single();
+
+        if (data) {
+          setAddresses((prev) => [...prev, data]);
+          setSelectedAddressId(data.id);
+        }
+      }
+
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      const profileUpdate = {};
+      if (!profile?.full_name && fullName) profileUpdate.full_name = fullName;
+      if (!profile?.phone && formData.phone.trim()) {
+        profileUpdate.phone = formData.phone.trim();
+      }
+      if (Object.keys(profileUpdate).length) {
+        await supabase.from("profiles").update(profileUpdate).eq("id", user.id);
+      }
+    } catch (err) {
+      console.error("Failed to save checkout details:", err);
+    }
+  }
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setPaymentError("");
@@ -164,8 +243,20 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!isValidPincode(formData.zip)) {
+      setPaymentError("Please enter a valid 6-digit PIN code.");
+      return;
+    }
+
+    if (!formData.state) {
+      setPaymentError("Please select your state.");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitLabel("Creating payment order...");
+
+    await rememberCustomerDetails();
 
     try {
       const items = cartPayload(cart);
@@ -208,6 +299,21 @@ export default function CheckoutPage() {
         },
         theme: {
           color: "#3d2c29",
+        },
+        // QR shows on desktop by default; on mobile web Razorpay only renders
+        // it once support enables UPI QR on the account.
+        config: {
+          display: {
+            blocks: {
+              upi: {
+                name: "Pay via UPI",
+                instruments: [{ method: "upi", flows: ["qr", "intent"] }],
+              },
+            },
+            hide: [{ method: "upi", flows: ["collect"] }],
+            sequence: ["block.upi"],
+            preferences: { show_default_blocks: true },
+          },
         },
         handler: async function (response) {
           setSubmitLabel("Confirming payment...");
@@ -416,52 +522,92 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Address</label>
+                  <label className="form-label" htmlFor="checkout-address">
+                    Address
+                  </label>
                   <input
+                    id="checkout-address"
                     type="text"
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
                     className="form-input"
+                    placeholder="House / Flat No., Street, Area, Landmark"
+                    autoComplete="street-address"
                     required
                   />
                 </div>
 
-                <div className={`${styles.inputGrid} ${styles.inputGrid2}`}>
+                <div className={`${styles.inputGrid} ${styles.inputGrid3}`}>
                   <div className="form-group">
-                    <label className="form-label">City</label>
+                    <label className="form-label" htmlFor="checkout-zip">
+                      PIN Code
+                    </label>
                     <input
+                      id="checkout-zip"
+                      type="text"
+                      name="zip"
+                      value={formData.zip}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      pattern="[1-9][0-9]{5}"
+                      title="Enter a valid 6-digit PIN code"
+                      placeholder="342008"
+                      maxLength={6}
+                      required
+                    />
+                    {pincodeStatus === "loading" && (
+                      <p className={styles.fieldHint}>Finding city and state…</p>
+                    )}
+                    {pincodeStatus === "notFound" && (
+                      <p className={styles.fieldHint}>
+                        PIN code not found. Please fill city and state.
+                      </p>
+                    )}
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="checkout-city">
+                      City
+                    </label>
+                    <input
+                      id="checkout-city"
                       type="text"
                       name="city"
                       value={formData.city}
                       onChange={handleInputChange}
                       className="form-input"
+                      list="checkout-city-options"
+                      autoComplete="address-level2"
                       required
                     />
+                    <datalist id="checkout-city-options">
+                      {pincodeCities.map((c) => (
+                        <option key={c} value={c} />
+                      ))}
+                    </datalist>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-md)" }}>
-                    <div className="form-group">
-                      <label className="form-label">State</label>
-                      <input
-                        type="text"
-                        name="state"
-                        value={formData.state}
-                        onChange={handleInputChange}
-                        className="form-input"
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Zip Code</label>
-                      <input
-                        type="text"
-                        name="zip"
-                        value={formData.zip}
-                        onChange={handleInputChange}
-                        className="form-input"
-                        required
-                      />
-                    </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="checkout-state">
+                      State
+                    </label>
+                    <select
+                      id="checkout-state"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      autoComplete="address-level1"
+                      required
+                    >
+                      <option value="">Select state</option>
+                      {indianStates.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -495,7 +641,7 @@ export default function CheckoutPage() {
               <div style={{ marginTop: "var(--space-xl)" }}>
                 <h3 className={styles.formTitle}>2. Payment</h3>
                 <p style={{ fontSize: "0.9rem", color: "var(--color-secondary)", padding: "var(--space-md)", border: "1px dashed var(--color-border)", borderRadius: "var(--radius-sm)" }}>
-                  Secure payment via Razorpay opens after you confirm shipping. UPI, cards, and netbanking are supported (test mode).
+                  Secure payment via Razorpay opens after you confirm shipping. Pay with UPI, cards, netbanking, EMI, or wallets.
                 </p>
               </div>
             </div>

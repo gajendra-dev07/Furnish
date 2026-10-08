@@ -87,7 +87,9 @@ export default function AccountResetPasswordPage() {
               <p className={styles.badge}>Account</p>
               <h1 className={styles.title}>Link expired</h1>
               <p className={styles.subtitle}>
-                This reset link is invalid or has expired.
+                This reset link is invalid or has expired. Reset links only
+                work once, and only in the same browser where you requested
+                them — please open the link on the device you used.
               </p>
             </div>
             <p className={styles.switchText} style={{ marginTop: "1rem" }}>

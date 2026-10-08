@@ -4,13 +4,14 @@ import React from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { contactEmail, businessAddressText, businessMapUrl } from "@/constants/contact";
 import styles from "./terms.module.css";
 
 const keyPoints = [
   { label: "Free Shipping", value: "All India, always" },
   { label: "Returns", value: "7 days from delivery" },
   { label: "Warranty", value: "6 months on all products" },
-  { label: "Payments", value: "UPI · Cards · COD" },
+  { label: "Payments", value: "UPI · Cards · Netbanking" },
 ];
 
 const sections = [
@@ -27,7 +28,7 @@ const sections = [
   {
     num: "03",
     title: "Ordering & Payment",
-    body: "Orders are subject to availability. Your confirmation email is an acknowledgement — not acceptance — of your order. We accept UPI (GPay, PhonePe, Paytm, BHIM), Credit & Debit Cards (Visa, Mastercard, RuPay), Net Banking, and Cash on Delivery at select pincodes. Payments are processed by Razorpay. We never store card or bank details.",
+    body: "Orders are subject to availability. Your confirmation email is an acknowledgement — not acceptance — of your order. We accept UPI (GPay, PhonePe, Paytm, BHIM), Credit & Debit Cards (Visa, Mastercard, RuPay), Net Banking, EMI, and wallets. All orders are prepaid; Cash on Delivery is not available. Payments are processed by Razorpay. We never store card or bank details.",
   },
   {
     num: "04",
@@ -42,7 +43,7 @@ const sections = [
   {
     num: "06",
     title: "Returns & Refunds",
-    body: "Returns are accepted within 7 days of delivery for damaged or defective items only. Items must be unused, in original packaging, with proof of purchase. Natural wood variations and minor colour differences are not defects. COD orders are eligible for exchange or store credit — not cash refunds. Prepaid refunds are processed within 5–7 business days to the original payment method.",
+    body: "Returns are accepted within 7 days of delivery for damaged or defective items only. Items must be unused, in original packaging, with proof of purchase. Natural wood variations and minor colour differences are not defects. Refunds are processed within 5–7 business days to the original payment method.",
   },
   {
     num: "07",
@@ -119,9 +120,9 @@ export default function TermsOfServicePage() {
                 <div className={styles.contactBlock}>
                   <p className={styles.cardBody}>Questions? We&apos;re happy to help:</p>
                   <div className={styles.contactLinks}>
-                    <a href="mailto:furnis.in@gmail.com" className={styles.contactLink}>
+                    <a href={`mailto:${contactEmail}`} className={styles.contactLink}>
                       <span className={styles.contactLinkLabel}>Email</span>
-                      <span className={styles.contactLinkValue}>furnis.in@gmail.com</span>
+                      <span className={styles.contactLinkValue}>{contactEmail}</span>
                     </a>
                     <a href="https://wa.me/916375549637" className={styles.contactLink} target="_blank" rel="noopener noreferrer">
                       <span className={styles.contactLinkLabel}>WhatsApp</span>
@@ -130,6 +131,10 @@ export default function TermsOfServicePage() {
                     <a href="https://www.instagram.com/furnis.in/" className={styles.contactLink} target="_blank" rel="noopener noreferrer">
                       <span className={styles.contactLinkLabel}>Instagram</span>
                       <span className={styles.contactLinkValue}>@furnis.in</span>
+                    </a>
+                    <a href={businessMapUrl} className={styles.contactLink} target="_blank" rel="noopener noreferrer">
+                      <span className={styles.contactLinkLabel}>Address</span>
+                      <span className={styles.contactLinkValue}>{businessAddressText}</span>
                     </a>
                   </div>
                 </div>

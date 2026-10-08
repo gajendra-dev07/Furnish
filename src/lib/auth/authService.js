@@ -52,9 +52,9 @@ export async function signIn(email, password, next = "/") {
 
 /**
  * Create a new account and immediately sign in the user.
- * Returns { user, redirect: "/" } on success, or throws with a message.
+ * Returns { user, redirect } on success, or throws with a message.
  */
-export async function signUp(fullName, email, password, phone) {
+export async function signUp(fullName, email, password, phone, next = "/") {
   const res = await fetch("/api/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -67,7 +67,7 @@ export async function signUp(fullName, email, password, phone) {
   }
 
   // Immediately sign in so the user doesn't have to enter credentials again
-  return await signIn(email, password, "/");
+  return await signIn(email, password, next);
 }
 
 

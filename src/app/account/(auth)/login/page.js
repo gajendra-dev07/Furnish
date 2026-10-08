@@ -4,6 +4,7 @@ import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, validation } from "@/lib/auth/authService";
+import { safeNext } from "@/lib/auth/safeNext";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import styles from "@/app/account/(auth)/auth.module.css";
@@ -13,7 +14,7 @@ import styles from "@/app/account/(auth)/auth.module.css";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/";
+  const next = safeNext(searchParams.get("next"));
   const urlError = searchParams.get("error");
 
   const [email, setEmail] = useState("");
@@ -106,7 +107,10 @@ function LoginForm() {
 
       <p className={styles.switchText}>
         Don&apos;t have an account?{" "}
-        <Link href="/account/register" className={styles.switchLink}>
+        <Link
+          href={next === "/" ? "/account/register" : `/account/register?next=${encodeURIComponent(next)}`}
+          className={styles.switchLink}
+        >
           Create account
         </Link>
       </p>

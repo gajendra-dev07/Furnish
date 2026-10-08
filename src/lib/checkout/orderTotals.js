@@ -167,6 +167,10 @@ export function validateShippingAddress(shipping) {
     }
   }
 
+  if (!/^[1-9][0-9]{5}$/.test(String(shipping.zip).trim())) {
+    throw new Error("Please enter a valid 6-digit PIN code");
+  }
+
   return {
     firstName: String(shipping.firstName).trim(),
     lastName: String(shipping.lastName).trim(),

@@ -12,7 +12,7 @@ BEGIN
   -- Find the user by email
   SELECT id INTO target_uid
   FROM auth.users
-  WHERE email = 'jagdishnjaggu@gmail.com';
+  WHERE email = 'ashok63755@gmail.com';
 
   IF target_uid IS NULL THEN
     RAISE EXCEPTION 'User with that email not found. Make sure you signed up first.';
