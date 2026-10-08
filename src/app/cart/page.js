@@ -168,7 +168,7 @@ export default function CartPage() {
               </Link>
 
               <div className={styles.paymentBadges}>
-                <span>🔒 Secure Checkout — UPI, Cards, Netbanking, COD</span>
+                <span>🔒 Secure Checkout — UPI, Cards, Netbanking</span>
               </div>
             </div>
           </div>

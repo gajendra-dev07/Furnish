@@ -495,7 +495,7 @@ export default function CheckoutPage() {
               <div style={{ marginTop: "var(--space-xl)" }}>
                 <h3 className={styles.formTitle}>2. Payment</h3>
                 <p style={{ fontSize: "0.9rem", color: "var(--color-secondary)", padding: "var(--space-md)", border: "1px dashed var(--color-border)", borderRadius: "var(--radius-sm)" }}>
-                  Secure payment via Razorpay opens after you confirm shipping. UPI, cards, and netbanking are supported (test mode).
+                  Secure payment via Razorpay opens after you confirm shipping. Pay with UPI, cards, netbanking, EMI, or wallets.
                 </p>
               </div>
             </div>
