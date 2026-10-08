@@ -20,8 +20,26 @@ const UNPROTECTED_ACCOUNT_PATHS = new Set([
   "/account/auth",
 ]);
 
+// Scheme the visitor actually used, from Cloudflare's cf-visitor header.
+// x-forwarded-proto is not usable: `next dev` sets it to "http" itself.
+function visitorScheme(request) {
+  try {
+    return JSON.parse(request.headers.get("cf-visitor") || "{}").scheme;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function proxy(request) {
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
+
+  // UPI app payments on mobile Chrome only work on a secure page.
+  const scheme = visitorScheme(request);
+  const host = request.headers.get("host");
+  if (scheme === "http" && host) {
+    return NextResponse.redirect(`https://${host}${pathname}${search}`, 308);
+  }
+
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", pathname);
 
@@ -136,6 +154,12 @@ export async function proxy(request) {
 
   // Attach the pathname as a request header so layouts can read it server-side
   supabaseResponse.headers.set("x-pathname", pathname);
+  if (scheme === "https") {
+    supabaseResponse.headers.set(
+      "Strict-Transport-Security",
+      "max-age=31536000"
+    );
+  }
 
   return supabaseResponse;
 }
