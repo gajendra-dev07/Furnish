@@ -1,13 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signUp, validation } from "@/lib/auth/authService";
+import { safeNext } from "@/lib/auth/safeNext";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import styles from "@/app/account/(auth)/auth.module.css";
 
 export default function AccountRegisterPage() {
+  return (
+    <>
+      <Header />
+      <main className={styles.main}>
+        <Suspense fallback={<div className={styles.card} />}>
+          <RegisterForm />
+        </Suspense>
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  const next = safeNext(searchParams.get("next"));
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -40,9 +58,8 @@ export default function AccountRegisterPage() {
 
     setIsLoading(true);
     try {
-      await signUp(fullName, email, password, phone);
-      // Immediately navigate to the home page as a fully authenticated user
-      window.location.href = "/";
+      const { redirect } = await signUp(fullName, email, password, phone, next);
+      window.location.href = redirect;
     } catch (err) {
       setFormError(err.message);
       setIsLoading(false);
@@ -52,9 +69,6 @@ export default function AccountRegisterPage() {
 
   // ── Registration form ──────────────────────────────────────────────────────
   return (
-    <>
-      <Header />
-      <main className={styles.main}>
         <div className={styles.card}>
           <div className={styles.heading}>
             <p className={styles.badge}>New account</p>
@@ -154,13 +168,13 @@ export default function AccountRegisterPage() {
 
           <p className={styles.switchText}>
             Already have an account?{" "}
-            <Link href="/account/login" className={styles.switchLink}>
+            <Link
+              href={next === "/" ? "/account/login" : `/account/login?next=${encodeURIComponent(next)}`}
+              className={styles.switchLink}
+            >
               Sign in
             </Link>
           </p>
         </div>
-      </main>
-      <Footer />
-    </>
   );
 }

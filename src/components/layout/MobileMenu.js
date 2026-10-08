@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { media } from "@/constants/media";
+import { contactEmail } from "@/constants/contact";
 import { markGoHomeTop, scrollPageToTop } from "@/lib/goHome";
 import styles from "./MobileMenu.module.css";
 
@@ -180,6 +181,12 @@ export default function MobileMenu({
               style={{ color: "var(--color-primary)", textDecoration: "none", fontSize: "0.8125rem", display: "inline-flex", alignItems: "center", gap: "6px" }}
             >
               <span style={{ fontWeight: 600, color: "var(--color-accent)" }}>Instagram:</span> @furnis.in
+            </a>
+            <a
+              href={`mailto:${contactEmail}`}
+              style={{ color: "var(--color-primary)", textDecoration: "none", fontSize: "0.8125rem", display: "inline-flex", alignItems: "center", gap: "6px" }}
+            >
+              <span style={{ fontWeight: 600, color: "var(--color-accent)" }}>Email:</span> {contactEmail}
             </a>
           </div>
         </div>

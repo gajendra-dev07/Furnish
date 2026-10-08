@@ -46,8 +46,13 @@ async function main() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  const adminEmail = "admin@furnis.in";
-  const adminPassword = "AdminPassword123!";
+  const adminEmail = "ashok63755@gmail.com";
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminPassword || adminPassword.length < 12) {
+    console.error("Set ADMIN_PASSWORD (12+ characters) before running this script.");
+    process.exit(1);
+  }
 
   console.log(`Setting up admin account for: ${adminEmail}...`);
 
@@ -65,7 +70,7 @@ async function main() {
       email: adminEmail,
       password: adminPassword,
       email_confirm: true,
-      user_metadata: { full_name: "Admin" },
+      user_metadata: { full_name: "Ashok Jangid" },
     });
     if (createError) {
       console.error("Failed to create admin user:", createError.message);
@@ -91,7 +96,7 @@ async function main() {
     id: user.id,
     email: adminEmail,
     role: "admin",
-    full_name: "Furnish Admin",
+    full_name: "Ashok Jangid",
   });
 
   if (profileError) {
@@ -101,7 +106,6 @@ async function main() {
 
   console.log("SUCCESS");
   console.log("Admin Email:", adminEmail);
-  console.log("Admin Password:", adminPassword);
 }
 
 main().catch((err) => {

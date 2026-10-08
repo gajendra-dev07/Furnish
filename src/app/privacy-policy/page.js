@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { contactEmail, businessAddressText, businessMapUrl } from "@/constants/contact";
 import styles from "./privacy.module.css";
 
 const sections = [
@@ -35,7 +36,7 @@ const sections = [
   {
     num: "06",
     title: "Your Rights",
-    body: `Depending on your jurisdiction, you have the right to access the personal data we hold about you, request corrections, request deletion, and opt out of marketing at any time. To exercise any of these rights, email us at furnis.in@gmail.com. We aim to respond within 2 business days.`,
+    body: `Depending on your jurisdiction, you have the right to access the personal data we hold about you, request corrections, request deletion, and opt out of marketing at any time. To exercise any of these rights, email us at ${contactEmail}. We aim to respond within 2 business days.`,
   },
   {
     num: "07",
@@ -96,9 +97,9 @@ export default function PrivacyPolicyPage() {
                   <div className={styles.contactInline}>
                     <p className={styles.sectionBody}>Questions about this Privacy Policy? Reach out:</p>
                     <div className={styles.contactRow}>
-                      <a href="mailto:furnis.in@gmail.com" className={styles.contactItem}>
+                      <a href={`mailto:${contactEmail}`} className={styles.contactItem}>
                         <span className={styles.contactItemLabel}>Email</span>
-                        <span className={styles.contactItemValue}>furnis.in@gmail.com</span>
+                        <span className={styles.contactItemValue}>{contactEmail}</span>
                       </a>
                       <a href="https://wa.me/916375549637" className={styles.contactItem} target="_blank" rel="noopener noreferrer">
                         <span className={styles.contactItemLabel}>WhatsApp</span>
@@ -107,6 +108,10 @@ export default function PrivacyPolicyPage() {
                       <a href="https://www.instagram.com/furnis.in/" className={styles.contactItem} target="_blank" rel="noopener noreferrer">
                         <span className={styles.contactItemLabel}>Instagram</span>
                         <span className={styles.contactItemValue}>@furnis.in</span>
+                      </a>
+                      <a href={businessMapUrl} className={styles.contactItem} target="_blank" rel="noopener noreferrer">
+                        <span className={styles.contactItemLabel}>Address</span>
+                        <span className={styles.contactItemValue}>{businessAddressText}</span>
                       </a>
                     </div>
                   </div>

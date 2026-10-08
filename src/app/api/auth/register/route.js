@@ -53,7 +53,10 @@ export async function POST(request) {
 
     if (createError) {
       const msg = (createError.message || "").toLowerCase();
-      const isDuplicate = msg.includes("already registered") || msg.includes("already exists");
+      const isDuplicate =
+        msg.includes("already registered") ||
+        msg.includes("already been registered") ||
+        msg.includes("already exists");
       return NextResponse.json(
         { error: isDuplicate ? "An account with this email already exists. Please sign in." : (createError.message || "Failed to create account.") },
         { status: isDuplicate ? 409 : 400 }

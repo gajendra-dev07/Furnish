@@ -86,6 +86,25 @@ export const CartProvider = ({ children }) => {
     }
   }, []);
 
+  // Cart and wishlist live in this browser, not the account, so clear them on
+  // sign-out to keep them from showing up for the next person on the device.
+  useEffect(() => {
+    const client = createClient();
+    if (!client) return;
+
+    const {
+      data: { subscription },
+    } = client.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_OUT") return;
+      setCart([]);
+      setWishlist([]);
+      localStorage.removeItem("furnish_cart");
+      localStorage.removeItem("furnish_wishlist");
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Save cart to LocalStorage when it changes
   useEffect(() => {
     if (isLoaded && typeof window !== "undefined") {

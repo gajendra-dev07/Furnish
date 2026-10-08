@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { media } from "@/constants/media";
+import { contactEmail, businessAddressText, businessMapUrl } from "@/constants/contact";
 import { markGoHomeTop, scrollPageToTop } from "@/lib/goHome";
 import styles from "./Footer.module.css";
 
@@ -108,6 +109,22 @@ export default function Footer({ flush = false }) {
                 style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}
               >
                 <span>Instagram:</span> @furnis.in
+              </a>
+              <a
+                href={`mailto:${contactEmail}`}
+                className={styles.contact}
+                style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px" }}
+              >
+                <span>Email:</span> {contactEmail}
+              </a>
+              <a
+                href={businessMapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.contact}
+                style={{ textDecoration: "none", lineHeight: 1.6 }}
+              >
+                <span>Address:</span> {businessAddressText}
               </a>
             </div>
           </div>

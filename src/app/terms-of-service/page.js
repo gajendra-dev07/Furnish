@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { contactEmail, businessAddressText, businessMapUrl } from "@/constants/contact";
 import styles from "./terms.module.css";
 
 const keyPoints = [
@@ -119,9 +120,9 @@ export default function TermsOfServicePage() {
                 <div className={styles.contactBlock}>
                   <p className={styles.cardBody}>Questions? We&apos;re happy to help:</p>
                   <div className={styles.contactLinks}>
-                    <a href="mailto:furnis.in@gmail.com" className={styles.contactLink}>
+                    <a href={`mailto:${contactEmail}`} className={styles.contactLink}>
                       <span className={styles.contactLinkLabel}>Email</span>
-                      <span className={styles.contactLinkValue}>furnis.in@gmail.com</span>
+                      <span className={styles.contactLinkValue}>{contactEmail}</span>
                     </a>
                     <a href="https://wa.me/916375549637" className={styles.contactLink} target="_blank" rel="noopener noreferrer">
                       <span className={styles.contactLinkLabel}>WhatsApp</span>
@@ -130,6 +131,10 @@ export default function TermsOfServicePage() {
                     <a href="https://www.instagram.com/furnis.in/" className={styles.contactLink} target="_blank" rel="noopener noreferrer">
                       <span className={styles.contactLinkLabel}>Instagram</span>
                       <span className={styles.contactLinkValue}>@furnis.in</span>
+                    </a>
+                    <a href={businessMapUrl} className={styles.contactLink} target="_blank" rel="noopener noreferrer">
+                      <span className={styles.contactLinkLabel}>Address</span>
+                      <span className={styles.contactLinkValue}>{businessAddressText}</span>
                     </a>
                   </div>
                 </div>

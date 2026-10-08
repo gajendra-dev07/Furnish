@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import SectionHeading from "@/components/ui/SectionHeading";
 import MotionSection from "@/components/ui/MotionSection";
 import Button from "@/components/ui/Button";
+import { contactEmail, businessAddress, businessMapUrl } from "@/constants/contact";
 import styles from "@/features/contact/contact.module.css";
 
 export default function ContactPage() {
@@ -93,20 +94,26 @@ export default function ContactPage() {
           <div className={styles.infoColumn}>
             {/* Studio Address */}
             <div className={styles.infoBlock}>
-              <h3 className={styles.blockTitle}>Design Studios</h3>
-              <p className={styles.blockText}>
-                <strong>New York Studio:</strong>
+              <h3 className={styles.blockTitle}>Our Studio</h3>
+              <address className={styles.blockText} style={{ fontStyle: "normal" }}>
+                <strong>Furnis Workshop:</strong>
                 <br />
-                45 Greene Street, Soho
+                {businessAddress.line1}
                 <br />
-                New York, NY 10013
-              </p>
+                {businessAddress.line2}
+                <br />
+                {businessAddress.city}, {businessAddress.state}, {businessAddress.country}
+              </address>
               <p className={styles.blockText} style={{ marginTop: "var(--space-xs)" }}>
-                <strong>Los Angeles Studio:</strong>
-                <br />
-                8430 Melrose Avenue, West Hollywood
-                <br />
-                Los Angeles, CA 90069
+                <a
+                  href={businessMapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.highlightText}
+                  style={{ textDecoration: "underline", color: "var(--color-primary)" }}
+                >
+                  View on Google Maps
+                </a>
               </p>
             </div>
 
@@ -117,9 +124,9 @@ export default function ContactPage() {
                 Our client services concierge is active during editorial studio hours:
               </p>
               <p className={styles.blockText} style={{ marginTop: "var(--space-xs)" }}>
-                <strong>Monday — Friday:</strong> 9:00 AM – 6:00 PM EST
+                <strong>Monday — Friday:</strong> 9:00 AM – 6:00 PM IST
                 <br />
-                <strong>Saturday:</strong> 10:00 AM – 4:00 PM EST
+                <strong>Saturday:</strong> 10:00 AM – 4:00 PM IST
                 <br />
                 <strong>Sunday:</strong> Closed
               </p>
@@ -157,7 +164,13 @@ export default function ContactPage() {
               <p className={styles.blockText} style={{ marginTop: "var(--space-xs)" }}>
                 <strong>Email:</strong>
                 <br />
-                <span className={styles.highlightText}>support@furnis.in</span>
+                <a
+                  href={`mailto:${contactEmail}`}
+                  className={styles.highlightText}
+                  style={{ textDecoration: "underline", color: "var(--color-primary)" }}
+                >
+                  {contactEmail}
+                </a>
               </p>
             </div>
           </div>
