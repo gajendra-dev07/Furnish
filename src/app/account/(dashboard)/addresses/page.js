@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { indianStates } from "@/constants/indianStates";
+import { isValidPincode, usePincodeLookup } from "@/lib/address/pincode";
 import styles from "@/app/account/account.module.css";
 
 const EMPTY_FORM = {
@@ -21,6 +23,11 @@ export default function AddressesPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const {
+    lookup: lookupPincode,
+    cities: pincodeCities,
+    status: pincodeStatus,
+  } = usePincodeLookup();
 
   useEffect(() => {
     loadAddresses();
@@ -50,6 +57,11 @@ export default function AddressesPage() {
 
     if (!form.line1 || !form.city || !form.state || !form.pincode) {
       setError("Address line 1, city, state and pincode are required.");
+      return;
+    }
+
+    if (!isValidPincode(form.pincode)) {
+      setError("Please enter a valid 6-digit pincode.");
       return;
     }
 
@@ -118,6 +130,18 @@ export default function AddressesPage() {
 
   function setField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handlePincodeChange(value) {
+    const pincode = value.replace(/\D/g, "").slice(0, 6);
+    setField("pincode", pincode);
+    lookupPincode(pincode, ({ city, state }) => {
+      setForm((prev) => ({
+        ...prev,
+        city: city || prev.city,
+        state: state || prev.state,
+      }));
+    });
   }
 
   return (
@@ -232,11 +256,23 @@ export default function AddressesPage() {
                     <input
                       className={styles.formInput}
                       value={form.pincode}
-                      onChange={(e) => setField("pincode", e.target.value)}
+                      onChange={(e) => handlePincodeChange(e.target.value)}
                       placeholder="110001"
+                      inputMode="numeric"
+                      autoComplete="postal-code"
                       maxLength={6}
                       required
                     />
+                    {pincodeStatus === "loading" && (
+                      <span className={styles.formHint}>
+                        Finding city and state…
+                      </span>
+                    )}
+                    {pincodeStatus === "notFound" && (
+                      <span className={styles.formHint}>
+                        Pincode not found. Please fill city and state.
+                      </span>
+                    )}
                   </div>
 
                   <div
@@ -274,19 +310,33 @@ export default function AddressesPage() {
                       value={form.city}
                       onChange={(e) => setField("city", e.target.value)}
                       placeholder="Mumbai"
+                      list="address-city-options"
+                      autoComplete="address-level2"
                       required
                     />
+                    <datalist id="address-city-options">
+                      {pincodeCities.map((c) => (
+                        <option key={c} value={c} />
+                      ))}
+                    </datalist>
                   </div>
 
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>State *</label>
-                    <input
+                    <select
                       className={styles.formInput}
                       value={form.state}
                       onChange={(e) => setField("state", e.target.value)}
-                      placeholder="Maharashtra"
+                      autoComplete="address-level1"
                       required
-                    />
+                    >
+                      <option value="">Select state</option>
+                      {indianStates.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div
